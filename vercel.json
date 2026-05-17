@@ -1,6 +1,7 @@
 {
-  "buildCommand": "PORT=4173 BASE_PATH=/ pnpm run build",
-  "outputDirectory": "dist/public",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "PORT=4173 BASE_PATH=/ pnpm --filter @workspace/portfolio run build",
+  "outputDirectory": "artifacts/portfolio/dist/public",
   "framework": null,
   "cleanUrls": true,
   "trailingSlash": false,
