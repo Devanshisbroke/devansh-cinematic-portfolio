@@ -1,0 +1,27 @@
+{
+  "_comment": "Static mirror of SEO-relevant fields from src/content-registry/data.ts. This file feeds scripts/prerender.mjs (a Node ESM script that cannot import the TS registry directly without a transpile dependency). When data.ts changes, update this snapshot in the same commit. The registry remains the single source of truth at runtime; this snapshot is build-time-only and only carries the subset surfaced to crawlers / link previews per R10.11.",
+  "displayName": "Devansh Barai",
+  "roleHeadline": "Computer science, AI/ML, and product-oriented builder focused on turning ideas into useful software.",
+  "affiliations": [
+    "IIT Madras — BS in Data Science and Applications (2024–2028)",
+    "IIM Bangalore — BBA in Digital Business & Entrepreneurship (2025–2028)"
+  ],
+  "projects": [
+    {
+      "name": "GlobeID",
+      "tagline": "A unified way to carry your online presence across every platform you use."
+    },
+    {
+      "name": "Khetech",
+      "tagline": "AI that recognises plant disease from a leaf photo, designed for actual farms."
+    },
+    {
+      "name": "SupportDeskOps-v6",
+      "tagline": "A reinforcement-learning environment for customer-support workflows with LLM-driven decisions."
+    },
+    {
+      "name": "Last-Minute PDF",
+      "tagline": "A small PDF utility for when you need a document right now and have no time to fight a tool."
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+/**
+ * reset.css — minimal modern reset for the Portfolio_Site.
+ *
+ * Strips browser defaults that interfere with the design-system tokens,
+ * sets the document baseline (font, surface, line-height), and applies
+ * the keyboard-focus treatment required by R13.6 (≥ 2 CSS-px outline
+ * with ≥ 3:1 non-text contrast against every supported surface).
+ *
+ * Pairs with `theme.css`; depends on the design tokens it publishes.
+ *
+ * Validates / Supports: Requirements 4.4, 4.6, 13.6, 13.7, 13.5, 5.7
+ * (`prefers-reduced-motion` native fallback).
+ */
+
+/* ---------------------------------------------------------------------------
+ * Box model + zero-margin baseline.
+ * ------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------------------------------------------------------------------------
+ * Document baseline.
+ * `100dvh` so the document still fills the viewport on mobile when the
+ * URL bar collapses; `tab-size: 4` keeps `<pre>` / `<code>` readable.
+ * ------------------------------------------------------------------------- */
+html {
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+}
+
+body {
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  background: var(--surface-base);
+  color: var(--color-neutral-50);
+}
+
+[data-theme="light"] body {
+  color: var(--color-neutral-900);
+}
+
+/* ---------------------------------------------------------------------------
+ * Replaced elements + form controls.
+ * ------------------------------------------------------------------------- */
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * Focus visibility (R13.6) — ≥ 2 CSS px outline + composed `--shadow-focus`
+ * for ≥ 3:1 non-text contrast on every surface tone. Mouse-only focus is
+ * suppressed via `:focus { outline: none }`; keyboard focus reveals the
+ * full ring through `:focus-visible`.
+ * ------------------------------------------------------------------------- */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-focus);
+}
+
+/* ---------------------------------------------------------------------------
+ * Skip-to-content (R13.5, R13.7) — visually hidden until focused, then
+ * pinned to the upper-left of the viewport above all scene content.
+ * ------------------------------------------------------------------------- */
+.skip-to-content {
+  position: absolute;
+  left: -10000px;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.skip-to-content:focus {
+  left: 1rem;
+  top: 1rem;
+  width: auto;
+  height: auto;
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-elevated-1);
+  color: var(--color-neutral-50);
+  border-radius: var(--radius-md);
+  z-index: 9999;
+}
+
+[data-theme="light"] .skip-to-content:focus {
+  color: var(--color-neutral-900);
+}
+
+/* ---------------------------------------------------------------------------
+ * Reduced-motion native fallback (R5.7, R13.1).
+ *
+ * The JS Reduced_Motion_Mode (`applyReducedMotion`) is the primary
+ * defence; this rule guarantees that any animation declared outside the
+ * motion system (third-party CSS, user CSS, future code) still respects
+ * the OS-level preference.
+ * ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

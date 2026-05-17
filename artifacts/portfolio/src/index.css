@@ -1,0 +1,7 @@
+/* Google Fonts are loaded via <link rel="stylesheet"> in index.html so the
+   browser parser begins the request before this stylesheet starts parsing. */
+
+@import "./styles/theme.css";
+@import "./styles/reset.css";
+@import "./styles/fonts.css";
+@import "./styles/cinema.css";

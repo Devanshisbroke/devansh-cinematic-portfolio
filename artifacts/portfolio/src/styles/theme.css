@@ -1,0 +1,154 @@
+/**
+ * theme.css — Tailwind v4 @theme mapping for the cinematic identity engine.
+ *
+ * The palette is graphite-deep with three plasma accents (amber, plasma,
+ * signal) layered over a procedural background. Type ramps use clamp()
+ * for true fluid typography across 320–2560px viewports — no breakpoint
+ * "steps", just continuous scaling.
+ */
+
+@import "tailwindcss";
+
+@source "../../src/**/*.{ts,tsx}";
+
+@theme {
+  /* === Plasma accents (OLED-tuned: brighter, sharper) ================== */
+  --color-ink: #000000;
+  --color-paper: #F4F1EA;
+  --color-amber: #FFB347;
+  --color-amber-deep: #D9621F;
+  --color-plasma: #B388FF;
+  --color-signal: #6FD4FF;
+  --color-moss: #8EB58A;
+
+  /* === Neutral ramp (OLED-tuned for true-black panels) ================= */
+  --color-neutral-0: #FFFFFF;
+  --color-neutral-50: #FAFAFA;
+  --color-neutral-100: #F5F5F2;
+  --color-neutral-200: #E0DDD3;
+  --color-neutral-300: #B8B3A6;
+  --color-neutral-400: #8C887C;
+  --color-neutral-500: #6B6759;
+  --color-neutral-600: #3F3D36;
+  --color-neutral-700: #1F1E1A;
+  --color-neutral-800: #0A0A0A;
+  --color-neutral-900: #000000;
+
+  /* === Spacing scale ================================================== */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+
+  /* === Radius ========================================================= */
+  --radius-none: 0;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
+  --radius-pill: 9999px;
+
+  /* === Shadow / glow (boosted: OLED renders these without halation) === */
+  --shadow-low: 0 1px 2px rgba(0, 0, 0, 0.18);
+  --shadow-medium: 0 6px 18px rgba(0, 0, 0, 0.22);
+  --shadow-high: 0 18px 48px rgba(0, 0, 0, 0.28);
+  --shadow-cinema: 0 48px 120px rgba(0, 0, 0, 0.55);
+  --shadow-focus: 0 0 0 2px var(--surface-base), 0 0 0 4px var(--color-amber);
+  --glow-amber: 0 0 36px rgba(255, 179, 71, 0.55), 0 0 96px rgba(255, 179, 71, 0.28);
+  --glow-plasma: 0 0 36px rgba(179, 136, 255, 0.55), 0 0 96px rgba(179, 136, 255, 0.28);
+  --glow-signal: 0 0 36px rgba(111, 212, 255, 0.55), 0 0 96px rgba(111, 212, 255, 0.28);
+
+  /* === Borders ======================================================== */
+  --border-hairline: 0.5px solid var(--color-neutral-300);
+  --border-thin: 1px solid var(--color-neutral-400);
+  --border-medium: 2px solid var(--color-amber);
+  --border-emphasis: 3px solid currentColor;
+
+  /* === FLUID TYPOGRAPHY — clamp(min, fluid, max) ====================== */
+  /* Display: 56px on mobile → 144px on ultrawide */
+  --text-display: clamp(3.5rem, 1.5rem + 10vw, 9rem);
+  /* Headline: 40px → 80px */
+  --text-headline: clamp(2.5rem, 1.5rem + 5vw, 5rem);
+  /* Title: 24px → 44px */
+  --text-title: clamp(1.5rem, 1rem + 2.5vw, 2.75rem);
+  /* Eyebrow: 11px → 13px */
+  --text-eyebrow: clamp(0.6875rem, 0.5rem + 0.5vw, 0.8125rem);
+  --text-body: clamp(0.9375rem, 0.85rem + 0.45vw, 1.125rem);
+  --text-small: clamp(0.8125rem, 0.75rem + 0.3vw, 0.9375rem);
+  --text-caption: 0.75rem;
+
+  --leading-display: 0.92;
+  --leading-headline: 1.02;
+  --leading-title: 1.15;
+  --leading-body: 1.55;
+  --leading-small: 1.5;
+  --leading-caption: 1.4;
+
+  --tracking-display: -0.045em;
+  --tracking-headline: -0.035em;
+  --tracking-title: -0.02em;
+  --tracking-body: -0.005em;
+  --tracking-eyebrow: 0.22em;
+  --tracking-caption: 0.04em;
+
+  --font-weight-display: 600;
+  --font-weight-headline: 600;
+  --font-weight-title: 500;
+  --font-weight-body: 400;
+  --font-weight-small: 400;
+  --font-weight-caption: 500;
+
+  /* === Font families ================================================== */
+  --font-display: "Fraunces", "Iowan Old Style", "Georgia", serif;
+  --font-body: "Inter", "Helvetica Neue", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+
+  /* === Motion ========================================================= */
+  --ease-linear: linear;
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-in-out-quiet: cubic-bezier(0.6, -0.05, 0.01, 0.99);
+  --ease-in-decisive: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --duration-instant: 60ms;
+  --duration-short: 180ms;
+  --duration-medium: 320ms;
+  --duration-long: 720ms;
+  --duration-cinema: 1200ms;
+}
+
+/* ========================================================================
+ * Surface ramp — theme-switched. Dark is default.
+ * The dark theme uses a near-black ink with subtle blue undertone, giving
+ * the procedural background room to breathe without going pure black.
+ * ====================================================================== */
+:root,
+[data-theme="dark"] {
+  --surface-base: #000000;
+  --surface-elevated-1: #060606;
+  --surface-elevated-2: #0E0E0E;
+  --surface-accent: #1A0F00;
+  --surface-overlay: rgba(0, 0, 0, 0.84);
+  --surface-glass: rgba(10, 10, 10, 0.62);
+  --color-text: #FFFFFF;
+  --color-text-muted: #DCD9D2;
+  --color-text-subtle: #8E8B82;
+}
+
+[data-theme="light"] {
+  --surface-base: #F4F1EA;
+  --surface-elevated-1: #FFFFFF;
+  --surface-elevated-2: #FBF9F4;
+  --surface-accent: #FFF6E1;
+  --surface-overlay: rgba(244, 241, 234, 0.78);
+  --surface-glass: rgba(255, 255, 255, 0.7);
+  --color-text: #0A0A0A;
+  --color-text-muted: #3F3D36;
+  --color-text-subtle: #6B6759;
+}

@@ -1,0 +1,19 @@
+/**
+ * fonts.css — slow-font watchdog fallback only.
+ *
+ * The actual @import url("...fonts.googleapis.com...") moved to index.css
+ * to satisfy CSS spec (all @imports must precede non-@import statements,
+ * including Tailwind's `@import "tailwindcss"`). This file now only
+ * carries the [data-fonts="fallback"] selector that triggers when the
+ * watchdog detects slow / failed font loading (R4.9).
+ *
+ * Validates / Supports: Requirements 4.4, 4.6, 4.9.
+ */
+
+[data-fonts="fallback"] {
+  --letter-spacing-body-fallback: -0.005em;
+}
+
+[data-fonts="fallback"] body {
+  letter-spacing: var(--letter-spacing-body-fallback);
+}
