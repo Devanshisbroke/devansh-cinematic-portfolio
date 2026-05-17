@@ -108,47 +108,55 @@ export function TheWork() {
                 href={`#scene-work-${p.id}`}
                 ariaLabel={`${p.name} — ${p.tagline}`}
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 'var(--space-2)',
-                  padding: 'var(--space-5) var(--space-5)',
                   borderTop: '1px solid rgba(180,175,165,0.18)',
                   background: 'rgba(0,0,0,0.4)',
                   borderRadius: 'var(--radius-md)',
                   transition: 'border-color 280ms cubic-bezier(0.19,1,0.22,1), background 280ms cubic-bezier(0.19,1,0.22,1)',
                 }}
               >
-                <span
+                {/* Inner flex column lives here so its layout is owned by
+                    this div, not by TiltCard's outer <a> (which forces
+                    display: block to keep the 3D tilt clean). */}
+                <div
                   style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 'var(--text-caption)',
-                    letterSpacing: '0.16em',
-                    textTransform: 'uppercase',
-                    color: 'var(--color-text-subtle)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 'var(--space-2)',
+                    padding: 'var(--space-5)',
                   }}
                 >
-                  {String(i + 1).padStart(2, '0')} · {typeof p.year === 'number' ? p.year : `${p.year[0]}–${p.year[1]}`}
-                </span>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: 'var(--text-title)',
-                    lineHeight: 1.0,
-                    fontWeight: 500,
-                    color: 'var(--color-text)',
-                  }}
-                >
-                  {p.name}
-                </span>
-                <span
-                  style={{
-                    fontSize: 'var(--text-small)',
-                    color: 'var(--color-text-muted)',
-                    lineHeight: 1.4,
-                  }}
-                >
-                  {p.tagline}
-                </span>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 'var(--text-caption)',
+                      letterSpacing: '0.16em',
+                      textTransform: 'uppercase',
+                      color: 'var(--color-text-subtle)',
+                    }}
+                  >
+                    {String(i + 1).padStart(2, '0')} · {typeof p.year === 'number' ? p.year : `${p.year[0]}–${p.year[1]}`}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      fontSize: 'var(--text-title)',
+                      lineHeight: 1.0,
+                      fontWeight: 500,
+                      color: 'var(--color-text)',
+                    }}
+                  >
+                    {p.name}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 'var(--text-small)',
+                      color: 'var(--color-text-muted)',
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {p.tagline}
+                  </span>
+                </div>
               </TiltCard>
             </motion.li>
           ))}

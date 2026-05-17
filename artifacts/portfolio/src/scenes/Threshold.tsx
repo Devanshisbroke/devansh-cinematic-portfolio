@@ -145,10 +145,17 @@ export function Threshold() {
   const sharedScroll = useSharedScroll();
   const sceneProgress = sharedScroll.sceneProgress('scene-threshold');
 
-  const titleY = useTransform(sceneProgress, [0, 1], [0, -120]);
-  const titleOpacity = useTransform(sceneProgress, [0, 0.7], [1, 0]);
-  const orbitalRotate = useTransform(sceneProgress, [0, 1], [0, 30]);
-  const orbitalOpacity = useTransform(sceneProgress, [0, 0.3], [0.7, 0.2]);
+  // The shared scroll source emits sceneProgress = 0.5 when the scene
+  // sits at the top of the viewport (page-load state for Threshold) and
+  // sceneProgress = 1 once the scene has scrolled fully past. The ranges
+  // below are anchored on that 0.5 origin so the title is fully bright +
+  // un-shifted at page load, and only fades / lifts as the user scrolls
+  // away from Threshold. Earlier ranges that started at 0 made the
+  // page-load opacity land at ~0.29 — visible as a muted gray h1.
+  const titleY = useTransform(sceneProgress, [0.5, 1], [0, -120]);
+  const titleOpacity = useTransform(sceneProgress, [0.5, 0.85], [1, 0]);
+  const orbitalRotate = useTransform(sceneProgress, [0.5, 1], [0, 30]);
+  const orbitalOpacity = useTransform(sceneProgress, [0.5, 0.65], [0.7, 0.2]);
 
   const [reducedMotion, setReducedMotion] = useState<boolean>(() =>
     typeof window === 'undefined' ? false : readReducedMotion(),
