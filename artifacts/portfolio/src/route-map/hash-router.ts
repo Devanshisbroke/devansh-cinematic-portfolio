@@ -240,6 +240,12 @@ export function useHashRouter(): UseHashRouterResult {
         scrollToDomId(domId, reducedMotion);
         return;
       }
+      // If the slug isn't a top-level route but exists as an ID in the DOM
+      // (e.g. project sub-anchors like 'scene-work-globeid'), scroll to it directly.
+      if (typeof document !== 'undefined' && document.getElementById(slug) !== null) {
+        scrollToDomId(slug, reducedMotion);
+        return;
+      }
       // Unknown hash — R6.7 / R14.5: scroll to opening scene, surface a
       // non-blocking toast, never unload the document.
       const opening = lookup.entryByRole('opening');
