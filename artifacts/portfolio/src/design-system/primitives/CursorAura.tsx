@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { readReducedMotion } from '../../accessibility';
 import { routeMap } from '../../route-map/data';
+import { play } from '../../audio/sound-engine';
 
 /**
  * CursorAura — a custom dual-ring cursor with per-scene identity.
@@ -173,6 +174,7 @@ export function CursorAura() {
     };
 
     // === Pointer state ===================================================
+    let isHoveringMagnet = false;
     const onMove = (e: PointerEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
@@ -180,6 +182,13 @@ export function CursorAura() {
       const magnet = target?.closest<HTMLElement>(
         '[data-cursor-magnet], a, button, [role="button"], [role="switch"]',
       );
+      
+      const nextHover = !!magnet;
+      if (nextHover && !isHoveringMagnet) {
+        play('tick');
+      }
+      isHoveringMagnet = nextHover;
+
       // Tighter hover scaling — 1.6× on explicit magnets, 1.3× on bare links
       // so the cursor reads "alive" without ballooning across CTAs.
       targetScale = magnet

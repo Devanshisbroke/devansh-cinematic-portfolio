@@ -12,6 +12,7 @@ import { validateProject } from '../../content-registry/validate';
 import { Surface } from '../../design-system/primitives/Surface';
 import { ProjectReveal } from './ProjectReveal';
 import { TiltCard } from '../../design-system/primitives/TiltCard';
+import { ScrambleText } from '../../design-system/primitives/ScrambleText';
 
 const EASE: [number, number, number, number] = [0.19, 1, 0.22, 1];
 
@@ -62,7 +63,7 @@ export function TheWork() {
               maxWidth: '20ch',
             }}
           >
-            Four projects, <span className="gradient-text-amber" style={{ fontStyle: 'italic' }}>four worlds</span>.
+            Four projects, <span className="gradient-text-amber" style={{ fontStyle: 'italic' }}><ScrambleText text="four worlds" /></span>.
           </h2>
           <p
             style={{
@@ -148,7 +149,7 @@ export function TheWork() {
                       wordBreak: 'break-word',
                     }}
                   >
-                    {p.name}
+                    <ScrambleText text={p.name} />
                   </span>
                   <span
                     style={{
@@ -157,7 +158,7 @@ export function TheWork() {
                       lineHeight: 1.4,
                     }}
                   >
-                    {p.tagline}
+                    <ScrambleText text={p.tagline} />
                   </span>
                 </div>
               </TiltCard>

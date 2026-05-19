@@ -23,6 +23,9 @@ type SoundName = 'boot' | 'enter' | 'tick' | 'burst' | 'dump';
 
 let ctx: AudioContext | null = null;
 let masterGain: GainNode | null = null;
+let droneOsc1: OscillatorNode | null = null;
+let droneOsc2: OscillatorNode | null = null;
+let droneGain: GainNode | null = null;
 
 function ensureContext(): AudioContext | null {
   if (typeof window === 'undefined') return null;
@@ -36,6 +39,9 @@ function ensureContext(): AudioContext | null {
   masterGain = ctx.createGain();
   masterGain.gain.value = 0.18;
   masterGain.connect(ctx.destination);
+  if (isAudioEnabled()) {
+    startAmbientDrone(ctx);
+  }
   return ctx;
 }
 
@@ -58,9 +64,15 @@ export function setAudioEnabled(on: boolean): void {
   if (on) {
     // Resume context if it was suspended by autoplay policy
     const c = ensureContext();
-    if (c && c.state === 'suspended') void c.resume();
-  } else if (ctx && ctx.state === 'running') {
-    void ctx.suspend();
+    if (c) {
+      if (c.state === 'suspended') void c.resume();
+      startAmbientDrone(c);
+    }
+  } else {
+    stopAmbientDrone();
+    if (ctx && ctx.state === 'running') {
+      void ctx.suspend();
+    }
   }
 }
 
@@ -79,6 +91,60 @@ export const setAudio = (on: boolean): void => {
   baseSetAudioEnabled(on);
   emit(on);
 };
+
+// === Ambient Drone ========================================================
+
+function startAmbientDrone(c: AudioContext) {
+  if (droneOsc1) return;
+  if (!masterGain) return;
+  
+  droneGain = c.createGain();
+  droneGain.gain.value = 0.05;
+  droneGain.connect(masterGain);
+
+  droneOsc1 = c.createOscillator();
+  droneOsc1.type = 'sine';
+  droneOsc1.frequency.value = 55;
+  droneOsc1.connect(droneGain);
+  droneOsc1.start();
+
+  droneOsc2 = c.createOscillator();
+  droneOsc2.type = 'triangle';
+  droneOsc2.frequency.value = 110;
+  droneOsc2.connect(droneGain);
+  droneOsc2.start();
+  
+  if (typeof window !== 'undefined') {
+    window.addEventListener('scroll', onScrollModulate, { passive: true });
+  }
+}
+
+function stopAmbientDrone() {
+  if (droneOsc1) {
+    droneOsc1.stop();
+    droneOsc1.disconnect();
+    droneOsc1 = null;
+  }
+  if (droneOsc2) {
+    droneOsc2.stop();
+    droneOsc2.disconnect();
+    droneOsc2 = null;
+  }
+  if (droneGain) {
+    droneGain.disconnect();
+    droneGain = null;
+  }
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('scroll', onScrollModulate);
+  }
+}
+
+function onScrollModulate() {
+  if (!ctx || !droneOsc1 || !droneOsc2) return;
+  const scrollY = window.scrollY;
+  droneOsc1.frequency.setTargetAtTime(55 + (scrollY % 1000) / 200, ctx.currentTime, 0.1);
+  droneOsc2.frequency.setTargetAtTime(110 + (scrollY % 1000) / 100, ctx.currentTime, 0.1);
+}
 
 // === Synthesis primitives =================================================
 

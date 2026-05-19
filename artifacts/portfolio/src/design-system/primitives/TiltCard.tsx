@@ -62,16 +62,21 @@ export function TiltCard({
       targetX = -ny * maxTilt;
       targetY = nx * maxTilt;
       targetZ = liftPx;
+      
+      inner.style.setProperty('--mouse-x', `${e.clientX - r.left}px`);
+      inner.style.setProperty('--mouse-y', `${e.clientY - r.top}px`);
     };
     const onEnter = () => {
       inside = true;
       el.style.zIndex = '1';
+      inner.style.setProperty('--spotlight-opacity', '1');
     };
     const onLeave = () => {
       inside = false;
       targetX = 0;
       targetY = 0;
       targetZ = 0;
+      inner.style.setProperty('--spotlight-opacity', '0');
     };
 
     const tick = () => {
@@ -124,7 +129,21 @@ export function TiltCard({
           transformStyle: 'preserve-3d',
         }}
       >
-        {children}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            pointerEvents: 'none',
+            zIndex: 0,
+            background: `radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.06) 0%, transparent 60%)`,
+            opacity: 'var(--spotlight-opacity, 0)',
+            transition: 'opacity 300ms ease',
+            borderRadius: 'inherit',
+          }}
+        />
+        <div style={{ position: 'relative', zIndex: 1, height: '100%' }}>
+          {children}
+        </div>
       </div>
     </a>
   );

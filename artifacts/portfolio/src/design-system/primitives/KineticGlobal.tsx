@@ -42,6 +42,10 @@ export function KineticGlobal() {
     let stopped = false;
     let visible = !document.hidden;
 
+    let lastScrollY = window.scrollY;
+    let lastTime = performance.now();
+    let scrollVelocity = 0;
+
     // Debounced re-collect — coalesces successive lazy scene mounts into
     // a single pass per frame instead of one per insertion.
     let recollectTimer: ReturnType<typeof setTimeout> | null = null;
@@ -55,12 +59,25 @@ export function KineticGlobal() {
     const mo = new MutationObserver(scheduleRecollect);
     mo.observe(document.body, { childList: true, subtree: true });
 
-    const tick = () => {
+    const tick = (now: number) => {
       if (stopped) return;
       if (!visible) {
+        lastTime = performance.now();
+        lastScrollY = window.scrollY;
         raf = requestAnimationFrame(tick);
         return;
       }
+
+      const dt = Math.max(8, now - lastTime);
+      const dy = window.scrollY - lastScrollY;
+      const rawVelocity = dy / dt;
+      scrollVelocity += (rawVelocity - scrollVelocity) * 0.15;
+      
+      lastTime = now;
+      lastScrollY = window.scrollY;
+
+      const skew = Math.max(-4, Math.min(4, scrollVelocity * 1.5));
+
       const vh = window.innerHeight || 1;
       const viewportCentre = vh / 2;
       const cull = vh * 0.6;
@@ -74,6 +91,11 @@ export function KineticGlobal() {
         const w = k.weightMin + (k.weightMax - k.weightMin) * k2;
         const o = k.opszMin + (k.opszMax - k.opszMin) * k2;
         k.el.style.fontVariationSettings = `"wght" ${w.toFixed(0)}, "opsz" ${o.toFixed(0)}`;
+        if (Math.abs(skew) > 0.1) {
+          k.el.style.transform = `skewY(${skew.toFixed(2)}deg)`;
+        } else {
+          k.el.style.transform = '';
+        }
       }
       raf = requestAnimationFrame(tick);
     };

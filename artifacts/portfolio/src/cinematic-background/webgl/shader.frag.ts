@@ -95,8 +95,8 @@ void main(){
   float vignette = 1.0 - smoothstep(1.1, 1.9, r) * 0.30;
   color *= vignette;
 
-  // Subtle film grain
-  float grain = (hash(v_uv * u_res + u_time) - 0.5) * 0.012;
+  // Subtle film grain that intensifies with scroll velocity
+  float grain = (hash(v_uv * u_res + u_time) - 0.5) * (0.012 + u_velocity * 0.08);
   color += grain;
 
   gl_FragColor = vec4(color, 1.0);
