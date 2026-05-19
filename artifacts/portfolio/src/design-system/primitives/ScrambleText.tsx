@@ -24,9 +24,17 @@ export function ScrambleText({ text, className, style }: ScrambleTextProps) {
     isHovering.current = true;
     
     let frame = 0;
-    const totalFrames = 15;
+    const totalFrames = 30; // ~500ms total duration
+    let tickCount = 0;
     
     const animate = () => {
+      tickCount++;
+      // Update text every 2nd frame (effectively 30fps) so characters are readable
+      if (tickCount % 2 !== 0) {
+        frameRef.current = requestAnimationFrame(animate);
+        return;
+      }
+
       frame++;
       if (frame >= totalFrames) {
         setDisplayText(text);
