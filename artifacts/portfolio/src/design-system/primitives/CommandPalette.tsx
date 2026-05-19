@@ -231,7 +231,7 @@ function buildAnswers(): AskAnswer[] {
     { q: 'what is globeid?', a: 'Identity infrastructure for cross-platform presence. Founder + product lead.' },
     { q: 'what is khetech?', a: 'Computer-vision pipeline for plant-disease diagnosis from leaf photos.' },
     { q: 'what is supportdeskops?', a: 'RL environment with step-wise scoring for LLM-driven customer-support agents.' },
-    { q: 'what is last-minute pdf?', a: 'A small PDF utility built for the moment three minutes before a deadline.' },
+    { q: 'what is last-minute pdf?', a: 'Ultra-condensed exam revision notes — 10 pages per subject, delivered instantly for ₹29.' },
   ];
 }
 

@@ -104,9 +104,9 @@ export const identity: Identity_Profile = {
  * and carries a `voice.firstPersonSentence` + `voice.convictionSentence`
  * pair (R9.5, R9.6). The `primaryLink.url` for every project points at
  * Devansh's verified GitHub profile until per-project repository or
- * live URLs land in the registry — this keeps the build green while
- * preserving the R1.6 contract (label names the destination type, is
- * not the raw URL string).
+ * live URLs have been added for GlobeID, Khetech, and Last-Minute PDF;
+ * SupportDeskOps-v6 retains the repository link until a dedicated
+ * deployment lands.
  */
 export const projects: readonly Project_Record[] = [
   // ─── 1. GlobeID ────────────────────────────────────────────────────────
@@ -123,9 +123,9 @@ export const projects: readonly Project_Record[] = [
     year: 2025,
     tags: ['identity', 'product', 'systems', 'infrastructure'],
     primaryLink: {
-      label: 'Repository',
-      kind: 'repository',
-      url: 'https://github.com/Devanshisbroke',
+      label: 'Visit GlobeID',
+      kind: 'live',
+      url: 'https://theglobeid.in',
     },
     status: 'in-development',
     outcomes: [
@@ -156,9 +156,9 @@ export const projects: readonly Project_Record[] = [
     year: 2024,
     tags: ['ai', 'computer vision', 'agriculture', 'pytorch'],
     primaryLink: {
-      label: 'Repository',
-      kind: 'repository',
-      url: 'https://github.com/Devanshisbroke',
+      label: 'Visit Khetech',
+      kind: 'live',
+      url: 'https://khetech.in',
     },
     status: 'in-development',
     outcomes: [
@@ -212,30 +212,30 @@ export const projects: readonly Project_Record[] = [
     id: 'last-minute-pdf',
     name: 'Last-Minute PDF',
     tagline:
-      'A small PDF utility for when you need a document right now and have no time to fight a tool.',
+      'Ultra-condensed exam revision notes you can download instantly — pass your exam for ₹29.',
     summary:
-      "I built a lightweight PDF utility that handles the boring cases — quick conversion, quick delivery, no setup — so the moment of needing a document doesn't turn into a side quest.",
+      'I built a platform that delivers 10-page ultra-condensed revision notes for last-minute exam prep. No fluff, no filler — just the concepts that actually show up on the paper, packaged so you can absorb them in one sitting.',
     problem:
-      'Most PDF tools optimise for power users with weeks to learn them. The actual moment of needing a PDF is usually three minutes before something is due.',
+      'Students cram from 300-page textbooks the night before an exam. The signal-to-noise ratio is terrible. LastMinutePDF distills each subject into exactly what you need to pass, delivered instantly.',
     role: 'Designer and builder',
     year: 2024,
-    tags: ['productivity', 'automation', 'developer tools'],
+    tags: ['edtech', 'productivity', 'content', 'automation'],
     primaryLink: {
-      label: 'Repository',
-      kind: 'repository',
-      url: 'https://github.com/Devanshisbroke',
+      label: 'Visit LastMinutePDF',
+      kind: 'live',
+      url: 'https://lastminutenotes.in',
     },
     status: 'shipped',
     outcomes: [
-      'Backend automation for one-shot PDF delivery',
-      'Sub-second perceived response on common conversions',
+      'Condensed revision notes delivering exam-ready content in 10 pages',
+      'Instant digital delivery at ₹29 per subject',
     ],
-    technologyOrientation: 'Backend automation and developer tooling',
+    technologyOrientation: 'EdTech content delivery and digital commerce',
     voice: {
       firstPersonSentence:
-        'I scoped it to one moment — the panic five minutes before a deadline — and built only the things that show up in that moment.',
+        'I scoped it to one moment — the night before an exam — and built only the content and delivery that matters in that window.',
       convictionSentence:
-        'Reliability matters more than features when the user is already running late.',
+        'The best revision material respects the student\'s time. Ten pages of the right things beat three hundred pages of everything.',
     },
   },
 ] as const;

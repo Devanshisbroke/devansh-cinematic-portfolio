@@ -71,7 +71,7 @@ export function LastMinutePDFReveal({ project }: { project: Project_Record }) {
             left: 'clamp(var(--space-5), 4vw, var(--space-9))',
           }}
         >
-          04 · Last-Minute PDF · Utility
+          04 · Last-Minute PDF · Revision notes
         </motion.div>
 
         {/* Status code */}
@@ -88,8 +88,8 @@ export function LastMinutePDFReveal({ project }: { project: Project_Record }) {
             textAlign: 'right',
           }}
         >
-          STATUS · 200<br />
-          <span style={{ color: 'var(--color-text-subtle)' }}>{'<'} 1s response</span>
+          10-PAGE NOTES<br />
+          <span style={{ color: 'var(--color-text-subtle)' }}>instant delivery · ₹29</span>
         </div>
 
         <svg
@@ -135,7 +135,7 @@ export function LastMinutePDFReveal({ project }: { project: Project_Record }) {
             animate={inView ? { opacity: 1 } : undefined}
             transition={{ duration: reduced ? 0.12 : 0.6, delay: reduced ? 0 : 1.2 }}
           >
-            UTILITY · BUILT IN MOMENTS
+            REVISION · EXAM READY
           </motion.text>
         </svg>
       </div>

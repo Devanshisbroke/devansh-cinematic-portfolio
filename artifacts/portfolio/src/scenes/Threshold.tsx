@@ -230,7 +230,7 @@ export function Threshold() {
             margin: 0,
             color: '#FFFFFF',
             maxWidth: '14ch',
-            textShadow: '0 0 2px rgba(255,255,255,0.6), 0 0 32px rgba(255,255,255,0.10), 0 0 80px rgba(255,179,71,0.18)',
+            textShadow: '0 0 2px rgba(255,255,255,0.8), 0 0 40px rgba(255,255,255,0.15), 0 0 80px rgba(255,179,71,0.22)',
           }}
         >
           <GlyphRise text={identity.displayName} reducedMotion={reducedMotion} />
@@ -247,7 +247,7 @@ export function Threshold() {
             fontSize: 'clamp(1.75rem, 1rem + 3vw, 3.25rem)',
             lineHeight: 1.1,
             letterSpacing: '-0.025em',
-            color: '#F5F2EA',
+            color: '#FFFFFF',
             fontWeight: 400,
             maxWidth: '24ch',
           }}
@@ -268,7 +268,7 @@ export function Threshold() {
             fontFamily: 'var(--font-body)',
             fontSize: 'var(--text-body)',
             lineHeight: 'var(--leading-body)',
-            color: '#DCD9D2',
+            color: '#E8E5DE',
             maxWidth: '52ch',
           }}
         >

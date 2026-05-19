@@ -90,7 +90,7 @@ export function TheWork() {
             padding: 0,
             margin: 0,
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
             gap: 'var(--space-4)',
           }}
           aria-label="Projects"
@@ -111,6 +111,7 @@ export function TheWork() {
                   borderTop: '1px solid rgba(180,175,165,0.18)',
                   background: 'rgba(0,0,0,0.4)',
                   borderRadius: 'var(--radius-md)',
+                  overflow: 'hidden',
                   transition: 'border-color 280ms cubic-bezier(0.19,1,0.22,1), background 280ms cubic-bezier(0.19,1,0.22,1)',
                 }}
               >
@@ -143,6 +144,8 @@ export function TheWork() {
                       lineHeight: 1.0,
                       fontWeight: 500,
                       color: 'var(--color-text)',
+                      overflowWrap: 'break-word',
+                      wordBreak: 'break-word',
                     }}
                   >
                     {p.name}
