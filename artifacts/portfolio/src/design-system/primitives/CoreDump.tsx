@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { projects } from '../../content-registry/data';
 import { routeMap } from '../../route-map/data';
+import { useScroll } from '../../motion/scroll-source';
 
 export function CoreDump({
   active,
@@ -25,6 +26,7 @@ export function CoreDump({
   const [scrollY, setScrollY] = useState(0);
   const [memory, setMemory] = useState<string>('—');
   const [now, setNow] = useState<string>('');
+  const scrollSource = useScroll();
 
   useEffect(() => {
     if (!active) return;
@@ -69,11 +71,13 @@ export function CoreDump({
 
   useEffect(() => {
     if (!active) return;
-    const onScroll = () => setScrollY(window.scrollY);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [active]);
+    // Read scroll position via the single shared scroll source (R5.2) —
+    // never a second window scroll listener. The provider already
+    // rAF-coalesces native scroll events to one sample per frame.
+    setScrollY(scrollSource.scrollY.get());
+    const unsubscribe = scrollSource.subscribe((y) => setScrollY(y));
+    return unsubscribe;
+  }, [active, scrollSource]);
 
   useEffect(() => {
     if (!active) return;

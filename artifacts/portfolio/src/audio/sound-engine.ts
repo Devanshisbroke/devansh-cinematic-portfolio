@@ -93,11 +93,23 @@ export const setAudio = (on: boolean): void => {
 };
 
 // === Ambient Drone ========================================================
+//
+// A two-oscillator sub-bass bed (55 Hz sine + 110 Hz triangle). Rather
+// than coupling the drone to scroll position — which would require a
+// second `window` scroll listener and violate the single-shared-scroll
+// -source invariant (R5.2) — the drone breathes on its own slow LFO:
+// a third oscillator at 0.05 Hz gently detunes the pair via a
+// GainNode-scaled frequency offset. The result is an organic, evolving
+// pad that needs zero scroll wiring and runs entirely on the audio
+// thread (no per-frame JS).
+
+let droneLfo: OscillatorNode | null = null;
+let droneLfoGain: GainNode | null = null;
 
 function startAmbientDrone(c: AudioContext) {
   if (droneOsc1) return;
   if (!masterGain) return;
-  
+
   droneGain = c.createGain();
   droneGain.gain.value = 0.05;
   droneGain.connect(masterGain);
@@ -113,13 +125,30 @@ function startAmbientDrone(c: AudioContext) {
   droneOsc2.frequency.value = 110;
   droneOsc2.connect(droneGain);
   droneOsc2.start();
-  
-  if (typeof window !== 'undefined') {
-    window.addEventListener('scroll', onScrollModulate, { passive: true });
-  }
+
+  // Slow breathing LFO — modulates both oscillators' detune on the audio
+  // thread so the pad evolves without any main-thread / scroll wiring.
+  droneLfo = c.createOscillator();
+  droneLfo.type = 'sine';
+  droneLfo.frequency.value = 0.05; // one cycle every 20s
+  droneLfoGain = c.createGain();
+  droneLfoGain.gain.value = 6; // ±6 cents of detune sweep
+  droneLfo.connect(droneLfoGain);
+  droneLfoGain.connect(droneOsc1.detune);
+  droneLfoGain.connect(droneOsc2.detune);
+  droneLfo.start();
 }
 
 function stopAmbientDrone() {
+  if (droneLfo) {
+    droneLfo.stop();
+    droneLfo.disconnect();
+    droneLfo = null;
+  }
+  if (droneLfoGain) {
+    droneLfoGain.disconnect();
+    droneLfoGain = null;
+  }
   if (droneOsc1) {
     droneOsc1.stop();
     droneOsc1.disconnect();
@@ -134,16 +163,6 @@ function stopAmbientDrone() {
     droneGain.disconnect();
     droneGain = null;
   }
-  if (typeof window !== 'undefined') {
-    window.removeEventListener('scroll', onScrollModulate);
-  }
-}
-
-function onScrollModulate() {
-  if (!ctx || !droneOsc1 || !droneOsc2) return;
-  const scrollY = window.scrollY;
-  droneOsc1.frequency.setTargetAtTime(55 + (scrollY % 1000) / 200, ctx.currentTime, 0.1);
-  droneOsc2.frequency.setTargetAtTime(110 + (scrollY % 1000) / 100, ctx.currentTime, 0.1);
 }
 
 // === Synthesis primitives =================================================
