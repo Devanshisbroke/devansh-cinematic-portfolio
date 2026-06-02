@@ -102,11 +102,10 @@ export const identity: Identity_Profile = {
  *
  * Each record satisfies the field bounds enforced by `validateProject`
  * and carries a `voice.firstPersonSentence` + `voice.convictionSentence`
- * pair (R9.5, R9.6). The `primaryLink.url` for every project points at
- * Devansh's verified GitHub profile until per-project repository or
- * live URLs have been added for GlobeID, Khetech, and Last-Minute PDF;
- * SupportDeskOps-v6 retains the repository link until a dedicated
- * deployment lands.
+ * pair (R9.5, R9.6). Each `primaryLink.url` points at that project's
+ * live destination where one exists (GlobeID → theglobeid.in, Khetech →
+ * khetech.in, Last-Minute PDF → lastminutenotes.in); SupportDeskOps-v6
+ * links to its repository until a dedicated deployment lands.
  */
 export const projects: readonly Project_Record[] = [
   // ─── 1. GlobeID ────────────────────────────────────────────────────────
