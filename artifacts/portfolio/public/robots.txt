@@ -1,0 +1,19 @@
+# Devansh Barai — cinematic portfolio
+# All crawlers welcome; the site is a single static artifact.
+User-agent: *
+Allow: /
+
+# AI / LLM crawlers — explicitly allowed (the JSON-LD Person block in
+# index.html gives them a clean machine-readable identity).
+User-agent: GPTBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://devansh-cinematic-portfolio-portfol.vercel.app/sitemap.xml
