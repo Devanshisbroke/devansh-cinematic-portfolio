@@ -36,6 +36,44 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.png" />
 
+    <!-- Structured data (schema.org Person) — static, build-time only, no
+         runtime fetch. Makes Devansh eligible for Google rich results and
+         gives LLM crawlers a clean machine-readable identity. Mirrors the
+         Content_Registry; update alongside src/content-registry/data.ts. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Devansh Barai",
+        "url": "https://devansh-cinematic-portfolio-portfol.vercel.app/",
+        "image": "https://devansh-cinematic-portfolio-portfol.vercel.app/opengraph.jpg",
+        "email": "mailto:devanshbarai.official@gmail.com",
+        "jobTitle": "Computer science, AI/ML, and product-oriented builder",
+        "description": "Computer science, AI/ML, and product-oriented builder focused on turning ideas into useful software.",
+        "alumniOf": [
+          {
+            "@type": "CollegeOrUniversity",
+            "name": "Indian Institute of Technology Madras"
+          },
+          {
+            "@type": "CollegeOrUniversity",
+            "name": "Indian Institute of Management Bangalore"
+          }
+        ],
+        "knowsAbout": [
+          "Artificial Intelligence",
+          "Machine Learning",
+          "Product Engineering",
+          "Systems Design",
+          "Reinforcement Learning",
+          "Computer Vision"
+        ],
+        "sameAs": [
+          "https://linkedin.com/in/devansh-barai",
+          "https://github.com/Devanshisbroke"
+        ]
+      }
+    </script>
 
     <!-- Font preconnect + preload (matches the post-build assertion in
          vite.config.ts → fontPreloadPlugin). Loading the stylesheet
