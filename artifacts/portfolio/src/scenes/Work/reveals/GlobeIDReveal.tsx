@@ -504,6 +504,7 @@ export function GlobeIDReveal({ project }: { project: Project_Record }) {
       <canvas
         ref={canvasRef}
         aria-hidden="true"
+        className="glitch-hover"
         style={{
           position: 'absolute',
           inset: 0,

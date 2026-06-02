@@ -18,12 +18,14 @@ const LABEL: Readonly<Record<ThemeMode, string>> = {
   dark: 'Dark',
   light: 'Light',
   studio: 'Studio',
+  terminal: 'Terminal',
 };
 
 const GLYPH: Readonly<Record<ThemeMode, string>> = {
   dark: '☾',
   light: '☀',
   studio: '◐',
+  terminal: '⌨',
 };
 
 export function ThemeCycle({ className }: { className?: string }) {

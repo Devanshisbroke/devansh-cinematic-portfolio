@@ -71,6 +71,7 @@ export function KhetechReveal({ project }: { project: Project_Record }) {
           preserveAspectRatio="xMidYMid slice"
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
           aria-hidden="true"
+          className="glitch-hover"
         >
           <defs>
             <radialGradient id="khe-bg" cx="40%" cy="35%" r="70%">

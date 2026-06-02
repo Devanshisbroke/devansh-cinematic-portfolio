@@ -226,13 +226,13 @@ describe('<ReducedMotionToggle/> — R13.1 / R13.2 / R13.3', () => {
         {
           transform: { translateY: 24, scale: 1.02 },
           durationMs: 600,
-          easing: 'easeOut',
+          easing: 'ease-out-soft',
           opacity: 0,
         },
         {
           transform: { translateY: 0, scale: 1 },
           durationMs: 400,
-          easing: 'easeOut',
+          easing: 'ease-out-soft',
           opacity: 1,
         },
       ],

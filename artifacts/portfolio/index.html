@@ -45,11 +45,23 @@
     <script>
       (function () {
         var t = 'dark';
+        var studio = false;
+        var terminal = false;
         try {
-          var v = window.localStorage && window.localStorage.getItem('pcr.theme');
-          if (v === 'dark' || v === 'light') t = v;
+          var m = window.localStorage && window.localStorage.getItem('pcr.theme-mode');
+          if (m === 'studio') {
+            t = 'light';
+            studio = true;
+          } else if (m === 'terminal') {
+            t = 'dark';
+            terminal = true;
+          } else if (m === 'dark' || m === 'light') {
+            t = m;
+          }
         } catch (e) {}
         document.documentElement.setAttribute('data-theme', t);
+        if (studio) document.documentElement.setAttribute('data-studio', 'on');
+        if (terminal) document.documentElement.setAttribute('data-terminal', 'on');
       })();
     </script>
     <script>

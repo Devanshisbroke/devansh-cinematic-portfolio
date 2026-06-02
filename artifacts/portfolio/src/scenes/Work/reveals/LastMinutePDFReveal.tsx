@@ -97,6 +97,7 @@ export function LastMinutePDFReveal({ project }: { project: Project_Record }) {
           preserveAspectRatio="xMidYMid meet"
           style={{ width: '90%', maxWidth: 1200, maxHeight: '100%' }}
           aria-hidden="true"
+          className="glitch-hover"
         >
           {(['P', 'D', 'F'] as const).map((letter, i) => (
             <motion.text

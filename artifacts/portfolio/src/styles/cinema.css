@@ -395,3 +395,76 @@ html[data-studio="on"] h3 {
     transform: none;
   }
 }
+
+/* === Glitch effect on hover (Phase 2 Creative Interactions) ============= */
+.glitch-hover {
+  transition: transform 0.2s cubic-bezier(0.19, 1, 0.22, 1);
+  will-change: transform, filter;
+}
+.glitch-hover:hover {
+  animation: glitch-anim 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+  filter: drop-shadow(2px 0 0 rgba(255, 0, 0, 0.7)) drop-shadow(-2px 0 0 rgba(0, 255, 255, 0.7));
+}
+
+@keyframes glitch-anim {
+  0% { transform: translate(0) }
+  20% { transform: translate(-2px, 1px) }
+  40% { transform: translate(-1px, -1px) }
+  60% { transform: translate(2px, 1px) }
+  80% { transform: translate(1px, -1px) }
+  100% { transform: translate(0) }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glitch-hover:hover {
+    animation: none;
+    filter: none;
+  }
+}
+
+/* === Terminal mode styling overrides (Phase 2 Creative Interactions) === */
+html[data-terminal="on"] [data-cinematic="webgl"],
+html[data-terminal="on"] [data-cinematic="static"] {
+  display: none !important;
+}
+
+html[data-terminal="on"] body {
+  background-color: #000000 !important;
+  background-image: 
+    linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px) !important;
+  background-size: 24px 24px !important;
+}
+
+html[data-terminal="on"] .gradient-text-amber,
+html[data-terminal="on"] .gradient-text-plasma {
+  background: none !important;
+  -webkit-text-fill-color: #00FF41 !important;
+  color: #00FF41 !important;
+  filter: drop-shadow(0 0 8px rgba(0, 255, 65, 0.6)) !important;
+}
+
+html[data-terminal="on"] h1,
+html[data-terminal="on"] h2,
+html[data-terminal="on"] h3,
+html[data-terminal="on"] [data-text-step="display"],
+html[data-terminal="on"] [data-text-step="headline"],
+html[data-terminal="on"] [data-text-step="title"] {
+  text-shadow: 0 0 6px rgba(0, 255, 65, 0.65) !important;
+}
+
+/* CRT Scanline effect in Terminal Mode */
+html[data-terminal="on"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 4px;
+  z-index: 99999;
+  pointer-events: none;
+  opacity: 0.45;
+}
+

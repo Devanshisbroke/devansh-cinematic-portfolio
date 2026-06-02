@@ -107,6 +107,7 @@ export function SupportDeskOpsReveal({ project }: { project: Project_Record }) {
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
         aria-hidden="true"
+        className="glitch-hover"
         style={{
           position: 'absolute',
           inset: 0,

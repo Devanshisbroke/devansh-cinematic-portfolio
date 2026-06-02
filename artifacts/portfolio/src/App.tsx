@@ -31,6 +31,7 @@ import { KineticGlobal } from './design-system/primitives/KineticGlobal';
 import { SceneProgress } from './design-system/primitives/SceneProgress';
 import { ThemeCycle } from './design-system/primitives/ThemeCycle';
 import { FooterTelemetry } from './design-system/primitives/FooterTelemetry';
+import { TabIdentity } from './design-system/primitives/TabIdentity';
 import { play } from './audio/sound-engine';
 import { BootSequence } from './scenes/BootSequence';
 import { SystemHUD } from './scenes/SystemHUD';
@@ -203,6 +204,7 @@ function AppShell(): ReactNode {
       <KineticGlobal />
       <SceneProgress />
       <WarpTransition />
+      <TabIdentity />
 
       <Suspense fallback={null}>
         <CinematicBackground />

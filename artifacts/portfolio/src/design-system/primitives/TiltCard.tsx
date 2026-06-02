@@ -70,6 +70,7 @@ export function TiltCard({
       inside = true;
       el.style.zIndex = '1';
       inner.style.setProperty('--spotlight-opacity', '1');
+      inner.style.setProperty('--content-z', '40px');
     };
     const onLeave = () => {
       inside = false;
@@ -77,6 +78,7 @@ export function TiltCard({
       targetY = 0;
       targetZ = 0;
       inner.style.setProperty('--spotlight-opacity', '0');
+      inner.style.setProperty('--content-z', '0px');
     };
 
     const tick = () => {
@@ -141,7 +143,13 @@ export function TiltCard({
             borderRadius: 'inherit',
           }}
         />
-        <div style={{ position: 'relative', zIndex: 1, height: '100%' }}>
+        <div style={{ 
+          position: 'relative', 
+          zIndex: 1, 
+          height: '100%',
+          transform: 'translateZ(var(--content-z, 0px))',
+          transition: 'transform 300ms cubic-bezier(0.19, 1, 0.22, 1)',
+        }}>
           {children}
         </div>
       </div>

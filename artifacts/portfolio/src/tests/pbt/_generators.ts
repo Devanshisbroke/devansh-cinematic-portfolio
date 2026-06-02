@@ -108,7 +108,7 @@ export const arbRouteMap: fc.Arbitrary<RouteMap> = fc
     { minLength: 1, maxLength: 1000, selector: (e) => e.slug },
   )
   .map((entries): readonly RouteEntry[] =>
-    entries.map((e, rank) => ({ ...e, rank })),
+    entries.map((e, rank) => ({ ...e, rank }) as RouteEntry),
   )
   .filter((rm) => new Set(rm.map((e) => e.domId)).size === rm.length);
 

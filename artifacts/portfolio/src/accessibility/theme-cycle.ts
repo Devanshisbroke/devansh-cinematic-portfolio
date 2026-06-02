@@ -18,7 +18,7 @@ import {
   type Theme,
 } from './theme-store';
 
-export type ThemeMode = 'dark' | 'light' | 'studio';
+export type ThemeMode = 'dark' | 'light' | 'studio' | 'terminal';
 
 const STUDIO_KEY = 'pcr.theme-mode';
 
@@ -37,6 +37,7 @@ const subscribers = new Set<(mode: ThemeMode) => void>();
 export function readThemeMode(): ThemeMode {
   const stored = safeGet();
   if (stored === 'studio') return 'studio';
+  if (stored === 'terminal') return 'terminal';
   return readTheme();
 }
 
@@ -47,9 +48,16 @@ export function writeThemeMode(mode: ThemeMode): void {
     if (mode === 'studio') {
       document.documentElement.setAttribute('data-theme', 'light');
       document.documentElement.setAttribute('data-studio', 'on');
+      document.documentElement.removeAttribute('data-terminal');
       writeTheme('light' satisfies Theme);
+    } else if (mode === 'terminal') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.documentElement.setAttribute('data-terminal', 'on');
+      document.documentElement.removeAttribute('data-studio');
+      writeTheme('dark' satisfies Theme);
     } else {
       document.documentElement.removeAttribute('data-studio');
+      document.documentElement.removeAttribute('data-terminal');
       writeTheme(mode);
     }
   }
@@ -58,7 +66,7 @@ export function writeThemeMode(mode: ThemeMode): void {
 
 export function cycleThemeMode(): ThemeMode {
   const cur = readThemeMode();
-  const next: ThemeMode = cur === 'dark' ? 'light' : cur === 'light' ? 'studio' : 'dark';
+  const next: ThemeMode = cur === 'dark' ? 'light' : cur === 'light' ? 'studio' : cur === 'studio' ? 'terminal' : 'dark';
   writeThemeMode(next);
   return next;
 }

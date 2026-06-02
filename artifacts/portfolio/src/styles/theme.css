@@ -152,3 +152,38 @@
   --color-text-muted: #3F3D36;
   --color-text-subtle: #6B6759;
 }
+
+[data-terminal="on"] {
+  --surface-base: #000000 !important;
+  --surface-elevated-1: #000a00 !important;
+  --surface-elevated-2: #001400 !important;
+  --surface-accent: #001f00 !important;
+  --surface-overlay: rgba(0, 0, 0, 0.9) !important;
+  --surface-glass: rgba(0, 5, 0, 0.8) !important;
+
+  --color-text: #00FF41 !important;
+  --color-text-muted: #00DD30 !important;
+  --color-text-subtle: #008F11 !important;
+
+  --color-amber: #00FF41 !important;
+  --color-amber-deep: #008F11 !important;
+  --color-plasma: #00FF41 !important;
+  --color-signal: #00FF41 !important;
+  --color-moss: #00FF41 !important;
+
+  --font-display: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace !important;
+  --font-body: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace !important;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace !important;
+
+  --glow-amber: 0 0 36px rgba(0, 255, 65, 0.55), 0 0 96px rgba(0, 255, 65, 0.28) !important;
+  --glow-plasma: 0 0 36px rgba(0, 255, 65, 0.55), 0 0 96px rgba(0, 255, 65, 0.28) !important;
+  --glow-signal: 0 0 36px rgba(0, 255, 65, 0.55), 0 0 96px rgba(0, 255, 65, 0.28) !important;
+
+  --cursor-color: #00FF41 !important;
+  --cursor-radius: 0px !important;
+  --cursor-glow: 0 0 10px #00FF41, 0 0 28px rgba(0,255,65,0.65) !important;
+  --cursor-ring-bg: rgba(0, 255, 65, 0.05) !important;
+  --cursor-ring-shadow: none !important;
+  --cursor-clip: none !important;
+}
+
