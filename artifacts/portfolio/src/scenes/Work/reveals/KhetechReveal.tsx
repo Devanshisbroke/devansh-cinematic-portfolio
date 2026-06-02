@@ -13,6 +13,7 @@ import type { Project_Record } from '../../../content-registry/types';
 import { Surface } from '../../../design-system/primitives/Surface';
 import { Link } from '../../../design-system/primitives/Link';
 import { readReducedMotion, subscribeReducedMotion } from '../../../accessibility';
+import { RevealConviction } from '../RevealConviction';
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -333,6 +334,8 @@ export function KhetechReveal({ project }: { project: Project_Record }) {
             {project.primaryLink.label}
           </Link>
         </motion.div>
+
+        <RevealConviction project={project} accent="var(--color-moss)" maxWidthCh={54} />
       </div>
     </Surface>
   );

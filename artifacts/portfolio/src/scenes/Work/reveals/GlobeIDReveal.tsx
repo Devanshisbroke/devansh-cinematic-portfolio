@@ -21,6 +21,7 @@ import { Link } from '../../../design-system/primitives/Link';
 import { readReducedMotion, subscribeReducedMotion } from '../../../accessibility';
 import { registerVariant } from '../../../motion/motion-create';
 import { play } from '../../../audio/sound-engine';
+import { RevealConviction } from '../RevealConviction';
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -702,6 +703,11 @@ export function GlobeIDReveal({ project }: { project: Project_Record }) {
             ◇ click any facet to inspect
           </motion.div>
         )}
+
+        {/* Conviction closing beat — problem framing + the human line */}
+        <div style={{ pointerEvents: 'auto' }}>
+          <RevealConviction project={project} accent="#FFB347" align="center" maxWidthCh={52} />
+        </div>
       </div>
     </Surface>
   );

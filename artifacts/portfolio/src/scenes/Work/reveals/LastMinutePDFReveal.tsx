@@ -13,6 +13,7 @@ import type { Project_Record } from '../../../content-registry/types';
 import { Surface } from '../../../design-system/primitives/Surface';
 import { Link } from '../../../design-system/primitives/Link';
 import { readReducedMotion, subscribeReducedMotion } from '../../../accessibility';
+import { RevealConviction } from '../RevealConviction';
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -220,6 +221,8 @@ export function LastMinutePDFReveal({ project }: { project: Project_Record }) {
               {project.primaryLink.label} →
             </Link>
           </motion.div>
+
+          <RevealConviction project={project} accent="var(--color-amber-deep)" maxWidthCh={48} />
         </div>
 
         {/* Right: operational manifesto */}
