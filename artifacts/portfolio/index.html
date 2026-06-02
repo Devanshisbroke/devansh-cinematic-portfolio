@@ -116,6 +116,11 @@
         document.documentElement.setAttribute('data-theme', t);
         if (studio) document.documentElement.setAttribute('data-studio', 'on');
         if (terminal) document.documentElement.setAttribute('data-terminal', 'on');
+        // Sync mobile browser-chrome colour pre-paint so light/studio
+        // modes don't flash a black address bar before React hydrates.
+        var chrome = studio ? '#FFFFFF' : (t === 'light' ? '#F4F1EA' : '#000000');
+        var tcMeta = document.querySelector('meta[name="theme-color"]');
+        if (tcMeta) tcMeta.setAttribute('content', chrome);
       })();
     </script>
     <script>

@@ -60,8 +60,33 @@ export function writeThemeMode(mode: ThemeMode): void {
       document.documentElement.removeAttribute('data-terminal');
       writeTheme(mode);
     }
+    syncThemeColorMeta(mode);
   }
   for (const cb of subscribers) cb(mode);
+}
+
+/**
+ * Keep the mobile browser-chrome colour (`<meta name="theme-color">`) in
+ * sync with the active mode. Without this the address bar / status bar
+ * stays the dark default even in light or studio mode, which reads as a
+ * broken theme on iOS Safari and Android Chrome.
+ */
+const THEME_COLOR: Readonly<Record<ThemeMode, string>> = {
+  dark: '#000000',
+  terminal: '#000000',
+  light: '#F4F1EA',
+  studio: '#FFFFFF',
+};
+
+function syncThemeColorMeta(mode: ThemeMode): void {
+  if (typeof document === 'undefined') return;
+  let meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  if (!meta) {
+    meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    document.head.appendChild(meta);
+  }
+  meta.content = THEME_COLOR[mode] ?? '#000000';
 }
 
 export function cycleThemeMode(): ThemeMode {
