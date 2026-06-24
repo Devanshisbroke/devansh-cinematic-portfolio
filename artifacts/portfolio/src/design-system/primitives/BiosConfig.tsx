@@ -7,6 +7,7 @@ export interface BiosSettings {
   waveform: OscillatorType;
   attack: 'fast' | 'medium' | 'slow';
   release: 'fast' | 'medium' | 'slow';
+  crt: 'on' | 'off';
 }
 
 const ATTACK_MS = { fast: 3, medium: 8, slow: 20 };
@@ -14,7 +15,7 @@ const RELEASE_MS = { fast: 60, medium: 120, slow: 250 };
 
 export function readBiosSettings(): BiosSettings {
   if (typeof window === 'undefined') {
-    return { graphics: 'webgl', waveform: 'triangle', attack: 'fast', release: 'medium' };
+    return { graphics: 'webgl', waveform: 'triangle', attack: 'fast', release: 'medium', crt: 'off' };
   }
   try {
     return {
@@ -22,9 +23,10 @@ export function readBiosSettings(): BiosSettings {
       waveform: (window.localStorage.getItem('pcr.bios-waveform') as OscillatorType) ?? 'triangle',
       attack: (window.localStorage.getItem('pcr.bios-attack') as 'fast' | 'medium' | 'slow') ?? 'fast',
       release: (window.localStorage.getItem('pcr.bios-release') as 'fast' | 'medium' | 'slow') ?? 'medium',
+      crt: (window.localStorage.getItem('pcr.bios-crt') as 'on' | 'off') ?? 'off',
     };
   } catch {
-    return { graphics: 'webgl', waveform: 'triangle', attack: 'fast', release: 'medium' };
+    return { graphics: 'webgl', waveform: 'triangle', attack: 'fast', release: 'medium', crt: 'off' };
   }
 }
 
@@ -35,9 +37,60 @@ export function writeBiosSettings(settings: BiosSettings) {
     window.localStorage.setItem('pcr.bios-waveform', settings.waveform);
     window.localStorage.setItem('pcr.bios-attack', settings.attack);
     window.localStorage.setItem('pcr.bios-release', settings.release);
+    window.localStorage.setItem('pcr.bios-crt', settings.crt);
   } catch {
     // noop
   }
+}
+
+function getAdsrGraph(attack: 'fast' | 'medium' | 'slow', release: 'fast' | 'medium' | 'slow'): string {
+  const lines = [
+    '  ▲ VOL   ',
+    '  │       ',
+    '  │       ',
+    '  │       ',
+    '  └───────► TIME',
+  ];
+  
+  if (attack === 'fast' && release === 'fast') {
+    lines[1] = '  │  /\\';
+    lines[2] = '  │ /  \\';
+    lines[3] = '  │/    \\_____';
+  } else if (attack === 'fast' && release === 'medium') {
+    lines[1] = '  │  /\\';
+    lines[2] = '  │ /  \\_';
+    lines[3] = '  │/     \\____';
+  } else if (attack === 'fast' && release === 'slow') {
+    lines[1] = '  │  /\\';
+    lines[2] = '  │ /  \\____';
+    lines[3] = '  │/         \\';
+  } else if (attack === 'medium' && release === 'fast') {
+    lines[1] = '  │    /\\';
+    lines[2] = '  │   /  \\';
+    lines[3] = '  │  /    \\___';
+  } else if (attack === 'medium' && release === 'medium') {
+    lines[1] = '  │    /\\';
+    lines[2] = '  │   /  \\_';
+    lines[3] = '  │  /     \\__';
+  } else if (attack === 'medium' && release === 'slow') {
+    lines[1] = '  │    /\\';
+    lines[2] = '  │   /  \\____';
+    lines[3] = '  │  /         \\';
+  } else if (attack === 'slow' && release === 'fast') {
+    lines[1] = '  │      /\\';
+    lines[2] = '  │     /  \\';
+    lines[3] = '  │  __/    \\_';
+  } else if (attack === 'slow' && release === 'medium') {
+    lines[1] = '  │      /\\';
+    lines[2] = '  │     /  \\_';
+    lines[3] = '  │  __/     \\';
+  } else { // slow, slow
+    lines[1] = '  │      /\\';
+    lines[2] = '  │     /  \\___';
+    lines[3] = '  │  __/       \\';
+  }
+  
+  return lines.join('\n');
 }
 
 export function BiosConfig({
@@ -72,6 +125,7 @@ export function BiosConfig({
     { key: 'waveform', label: 'SYNTH WAVEFORM STYLE', options: ['triangle', 'square', 'sine', 'sawtooth'], desc: 'Select oscillator wave type for keystroke play.' },
     { key: 'attack', label: 'KEYBOARD ATTACK RATE', options: ['fast', 'medium', 'slow'], desc: 'Configure initial envelope attack rate.' },
     { key: 'release', label: 'KEYBOARD DECAY RELEASE', options: ['fast', 'medium', 'slow'], desc: 'Configure final notes decay duration.' },
+    { key: 'crt', label: 'CRT GLASS SCREEN FILTER', options: ['on', 'off'], desc: 'Toggle phosphor curved tube barrel distortion filter.' },
     { key: 'diagnostics', label: 'RUN SYSTEM SECTOR TEST', options: ['[ Press Enter ]'], desc: 'Run sector integrity verification scan.' },
     { key: 'defaults', label: 'LOAD BIOS DEFAULTS', options: ['[ Press Enter ]'], desc: 'Reset registers to production defaults.' },
     { key: 'save', label: 'SAVE & EXIT SETUP', options: ['[ Press Enter ]'], desc: 'Save settings to localStorage and reboot.' },
@@ -147,7 +201,7 @@ export function BiosConfig({
             setDiagnosticsActive(true);
             play('dump');
           } else if (item.key === 'defaults') {
-            setSettings({ graphics: 'webgl', waveform: 'triangle', attack: 'fast', release: 'medium' });
+            setSettings({ graphics: 'webgl', waveform: 'triangle', attack: 'fast', release: 'medium', crt: 'off' });
             play('burst');
           } else if (item.key === 'save') {
             writeBiosSettings(settings);
@@ -157,6 +211,11 @@ export function BiosConfig({
                 document.documentElement.removeAttribute('data-reduced-motion');
               } else {
                 document.documentElement.setAttribute('data-reduced-motion', 'on');
+              }
+              if (settings.crt === 'on') {
+                document.documentElement.setAttribute('data-crt-filter', 'on');
+              } else {
+                document.documentElement.removeAttribute('data-crt-filter');
               }
             }
             play('boot');
@@ -255,11 +314,21 @@ export function BiosConfig({
         {/* Right Hand: Sub Details / Help Box */}
         <div style={{ flex: 2, display: 'flex', flexDirection: 'column' }}>
           <div style={{ color: '#FFFF54', marginBottom: '10px', fontWeight: 'bold' }}>ITEM DESCRIPTION</div>
-          <div style={{ flex: 1, border: '1px solid #A8A8A8', padding: '12px', color: '#FFFFFF', backgroundColor: '#00007c' }}>
-            {currentItem.desc}
+          <div style={{ flex: 1, border: '1px solid #A8A8A8', padding: '12px', color: '#FFFFFF', backgroundColor: '#00007c', display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div>{currentItem.desc}</div>
             {currentItem.options.length > 1 && (
-              <div style={{ marginTop: '20px', color: '#A8A8A8' }}>
+              <div style={{ color: '#A8A8A8' }}>
                 Values: <span style={{ color: '#FFFF54' }}>{currentItem.options.join(' / ').toUpperCase()}</span>
+              </div>
+            )}
+            
+            {/* Visual envelope graph for ADSR registers */}
+            {(currentItem.key === 'attack' || currentItem.key === 'release' || currentItem.key === 'waveform') && (
+              <div style={{ borderTop: '1px dashed #A8A8A8', paddingTop: '12px', marginTop: 'auto' }}>
+                <div style={{ color: '#FFFF54', fontWeight: 'bold', fontSize: 11, marginBottom: 8 }}>VISUAL ENVELOPE CONFIG</div>
+                <pre style={{ margin: 0, fontFamily: 'monospace', fontSize: 12, color: '#00FF41', lineHeight: '1.2' }}>
+                  {getAdsrGraph(settings.attack, settings.release)}
+                </pre>
               </div>
             )}
           </div>

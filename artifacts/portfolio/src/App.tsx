@@ -30,6 +30,8 @@ import { TerminalShell } from './design-system/primitives/TerminalShell';
 import { TimeTravelHUD } from './design-system/primitives/TimeTravelHUD';
 import { SelfHealingGlitch } from './design-system/primitives/SelfHealingGlitch';
 import { BrickBreakGame } from './design-system/primitives/BrickBreakGame';
+import { PhysicsPlayground } from './design-system/primitives/PhysicsPlayground';
+import { MorseTranslator } from './design-system/primitives/MorseTranslator';
 import { KonamiListener } from './design-system/primitives/KonamiListener';
 import { WarpTransition } from './design-system/primitives/WarpTransition';
 import { AudioToggle } from './design-system/primitives/AudioToggle';
@@ -417,9 +419,32 @@ export function App(): ReactNode {
   const [game, setGame] = useState(false);
   const [glitch, setGlitch] = useState(false);
   const [timeTravel, setTimeTravel] = useState(false);
+  const [physics, setPhysics] = useState(false);
+  const [morse, setMorse] = useState(false);
+  const [crtActive, setCrtActive] = useState(false);
 
   useEffect(() => { setHydrated(true); }, []);
   void hydrated;
+
+  // Sync CRT filter state from root DOM attributes
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const checkCrt = () => {
+      const active = document.documentElement.getAttribute('data-crt-filter') === 'on';
+      setCrtActive(active);
+    };
+    checkCrt();
+
+    const observer = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type === 'attributes' && m.attributeName === 'data-crt-filter') {
+          checkCrt();
+        }
+      }
+    });
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const handleToggleBios = () => setBios((b) => !b);
@@ -427,12 +452,16 @@ export function App(): ReactNode {
     const handleToggleGame = () => setGame((g) => !g);
     const handleToggleGlitch = () => setGlitch((g) => !g);
     const handleToggleTimeTravel = () => setTimeTravel((t) => !t);
+    const handleTogglePhysics = () => setPhysics((p) => !p);
+    const handleToggleMorse = () => setMorse((m) => !m);
 
     window.addEventListener('pcr.toggle-bios', handleToggleBios);
     window.addEventListener('pcr.toggle-shell', handleToggleShell);
     window.addEventListener('pcr.toggle-game', handleToggleGame);
     window.addEventListener('pcr.toggle-glitch', handleToggleGlitch);
     window.addEventListener('pcr.toggle-timetravel', handleToggleTimeTravel);
+    window.addEventListener('pcr.toggle-physics', handleTogglePhysics);
+    window.addEventListener('pcr.toggle-morse', handleToggleMorse);
 
     return () => {
       window.removeEventListener('pcr.toggle-bios', handleToggleBios);
@@ -440,6 +469,8 @@ export function App(): ReactNode {
       window.removeEventListener('pcr.toggle-game', handleToggleGame);
       window.removeEventListener('pcr.toggle-glitch', handleToggleGlitch);
       window.removeEventListener('pcr.toggle-timetravel', handleToggleTimeTravel);
+      window.removeEventListener('pcr.toggle-physics', handleTogglePhysics);
+      window.removeEventListener('pcr.toggle-morse', handleToggleMorse);
     };
   }, []);
 
@@ -457,6 +488,8 @@ export function App(): ReactNode {
           setGame={setGame}
           setGlitch={setGlitch}
           setTimeTravel={setTimeTravel}
+          setPhysics={setPhysics}
+          setMorse={setMorse}
         />
         <CoreDump active={coreDump} onClose={() => setCoreDump(false)} />
         <MeltdownEffect active={meltdown} onClose={() => setMeltdown(false)} />
@@ -473,6 +506,9 @@ export function App(): ReactNode {
         <TimeTravelHUD active={timeTravel} onClose={() => setTimeTravel(false)} />
         <SelfHealingGlitch active={glitch} onClose={() => setGlitch(false)} />
         <BrickBreakGame active={game} onClose={() => setGame(false)} />
+        <PhysicsPlayground active={physics} onClose={() => setPhysics(false)} />
+        <MorseTranslator active={morse} onClose={() => setMorse(false)} />
+        {crtActive && <div className="crt-sweep-line" aria-hidden="true" />}
         <KonamiListener onActivate={() => { setCoreDump(true); play('dump'); }} />
       </ScrollSourceProvider>
     </LazyMotion>

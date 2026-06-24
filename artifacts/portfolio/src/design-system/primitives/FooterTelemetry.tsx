@@ -34,13 +34,10 @@ function fmtUptime(ms: number): string {
 }
 
 function getHash(): string {
-  // Vite injects a build-time signature via define; fall back to a
-  // session-stable random for dev so the value isn't blank.
   const buildHash = (typeof globalThis !== 'undefined'
     ? (globalThis as unknown as { __PCR_BUILD_HASH__?: string }).__PCR_BUILD_HASH__
     : undefined) ?? '';
   if (buildHash && buildHash.length > 0) return buildHash.slice(0, 7);
-  // Ephemeral session hash — same per page load
   if (typeof window === 'undefined') return 'dev----';
   const cached = (window as unknown as { __pcrSessionHash__?: string }).__pcrSessionHash__;
   if (cached) return cached;
@@ -53,6 +50,8 @@ export function FooterTelemetry() {
   const startRef = useRef<number>(typeof performance !== 'undefined' ? performance.now() : 0);
   const [uptime, setUptime] = useState('0s');
   const [pulseTick, setPulseTick] = useState(0);
+  const [morseActive, setMorseActive] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -60,6 +59,133 @@ export function FooterTelemetry() {
       setPulseTick((t) => t + 1);
     }, 1000);
     return () => clearInterval(id);
+  }, []);
+
+  // Listen for Morse code transmissions to flash status dot
+  useEffect(() => {
+    const handleMorseFlash = (e: Event) => {
+      const customEv = e as CustomEvent<{ active: boolean }>;
+      setMorseActive(!!customEv.detail?.active);
+    };
+    window.addEventListener('pcr.morse-flash', handleMorseFlash);
+    return () => window.removeEventListener('pcr.morse-flash', handleMorseFlash);
+  }, []);
+
+  // Live scroll/mouse telemetry oscilloscope
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    if (typeof window !== 'undefined' && window.navigator.userAgent.includes('jsdom')) {
+      return;
+    }
+    let ctx: CanvasRenderingContext2D | null = null;
+    try {
+      ctx = canvas.getContext('2d');
+    } catch {
+      return;
+    }
+    if (!ctx) return;
+
+    // Handle high DPI crispness
+    const dpr = window.devicePixelRatio || 1;
+    const width = 60;
+    const height = 12;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    ctx.scale(dpr, dpr);
+
+    let lastScrollY = window.scrollY;
+    let scrollVel = 0;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+    let mouseVel = 0;
+    let firstMouse = true;
+
+    const handleScroll = () => {
+      const sy = window.scrollY;
+      scrollVel += Math.abs(sy - lastScrollY);
+      lastScrollY = sy;
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (firstMouse) {
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+        firstMouse = false;
+        return;
+      }
+      mouseVel += Math.hypot(e.clientX - lastMouseX, e.clientY - lastMouseY);
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+    const points = new Array(40).fill(0);
+    let rafId = 0;
+
+    const draw = () => {
+      // Calculate current combined velocity
+      const inputVal = (scrollVel + mouseVel) * 0.12;
+      // Decay velocity
+      scrollVel *= 0.88;
+      mouseVel *= 0.88;
+
+      // Add to points history
+      points.shift();
+      const jitter = (Math.random() - 0.5) * 0.3;
+      points.push(inputVal + jitter);
+
+      // Draw
+      ctx.clearRect(0, 0, width, height);
+
+      // Grid lines (subtle dark green background grid)
+      ctx.strokeStyle = 'rgba(0, 255, 65, 0.12)';
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      // Center line
+      ctx.moveTo(0, height / 2);
+      ctx.lineTo(width, height / 2);
+      // Vertical grid ticks
+      for (let x = 10; x < width; x += 10) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+      }
+      ctx.stroke();
+
+      // Oscilloscope line
+      ctx.strokeStyle = '#00FF41';
+      ctx.lineWidth = 1;
+      ctx.shadowBlur = 3;
+      ctx.shadowColor = '#00FF41';
+      ctx.beginPath();
+      for (let i = 0; i < points.length; i++) {
+        const x = (i / (points.length - 1)) * width;
+        const val = points[i];
+        const angle = i * 0.8 + performance.now() * 0.04;
+        const yOffset = Math.sin(angle) * Math.min(height / 2 - 1, val);
+        const y = height / 2 + yOffset;
+
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      }
+      ctx.stroke();
+      ctx.shadowBlur = 0; // reset glow
+
+      rafId = requestAnimationFrame(draw);
+    };
+
+    rafId = requestAnimationFrame(draw);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(rafId);
+    };
   }, []);
 
   const hash = getHash();
@@ -96,7 +222,7 @@ export function FooterTelemetry() {
           display: 'inline-flex',
           alignItems: 'center',
           gap: 6,
-          color: '#FFB347',
+          color: morseActive ? '#00FF41' : '#FFB347',
           background: 'transparent',
           border: 'none',
           padding: 0,
@@ -105,7 +231,7 @@ export function FooterTelemetry() {
           cursor: 'none',
           textTransform: 'uppercase',
           letterSpacing: 'inherit',
-          transition: 'opacity 200ms ease',
+          transition: 'opacity 200ms ease, color 120ms ease',
         }}
         onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.75'; }}
         onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
@@ -116,13 +242,15 @@ export function FooterTelemetry() {
             width: 8,
             height: 8,
             borderRadius: '50%',
-            background: '#FFB347',
-            boxShadow: '0 0 8px #FFB347, 0 0 24px rgba(255,179,71,0.6)',
-            opacity: pulseTick % 2 === 0 ? 1 : 0.7,
-            transition: 'opacity 240ms ease',
+            background: morseActive ? '#00FF41' : '#FFB347',
+            boxShadow: morseActive
+              ? '0 0 12px #00FF41, 0 0 24px rgba(0,255,65,0.8)'
+              : '0 0 8px #FFB347, 0 0 24px rgba(255,179,71,0.6)',
+            opacity: morseActive ? 1 : (pulseTick % 2 === 0 ? 1 : 0.7),
+            transition: 'opacity 120ms ease, background-color 120ms ease, box-shadow 120ms ease',
           }}
         />
-        ● online
+        {morseActive ? '● morse tx' : '● online'}
       </button>
       <span style={{ opacity: 0.3 }}>::</span>
       {metrics.map((m, i) => (
@@ -177,9 +305,30 @@ export function FooterTelemetry() {
               {m.value}
             </span>
           </button>
-          {i < metrics.length - 1 && <span style={{ opacity: 0.25, marginInlineStart: 8 }}>·</span>}
+          <span style={{ opacity: 0.25, marginInlineStart: 8 }}>·</span>
         </span>
       ))}
+      <span
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          color: '#8E8B82',
+        }}
+      >
+        <span style={{ opacity: 0.55 }}>OSC</span>
+        <canvas
+          ref={canvasRef}
+          style={{
+            width: 60,
+            height: 12,
+            background: '#070707',
+            border: '1px solid rgba(0, 255, 65, 0.15)',
+            borderRadius: 2,
+            display: 'block',
+          }}
+        />
+      </span>
     </div>
   );
 }

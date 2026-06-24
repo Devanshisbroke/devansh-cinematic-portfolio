@@ -135,7 +135,10 @@ export function TerminalShell({
         `  • "bios"      : Open system Award BIOS configuration.\n` +
         `  • "travel"    : Launch git time-travel timeline scrubber.\n` +
         `  • "melt"      : Trigger system gravitational collapse.\n` +
-        `  • "glitch"    : Trigger code telemetry corruption.`
+        `  • "glitch"    : Trigger code telemetry corruption.\n` +
+        `  • "physics"   : Launch rigid-body HTML physics playground.\n` +
+        `  • "crt"       : Toggle CRT phosphor glass screen filter.\n` +
+        `  • "morse"     : Launch Morse code telemetry transmitter.`
       );
       return;
     }
@@ -282,6 +285,42 @@ export function TerminalShell({
       response('BOOTING: Deploying temporal git timeline scrubber...');
       setTimeout(() => {
         triggerTimeTravel();
+        onClose();
+      }, 800);
+      return;
+    }
+
+    // COMMAND: PHYSICS
+    if (input === 'physics' || input === 'gravity') {
+      response('BOOTING: Launching HTML rigid-body physics playground...');
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('pcr.toggle-physics'));
+        onClose();
+      }, 800);
+      return;
+    }
+
+    // COMMAND: CRT
+    if (input === 'crt' || input === 'tube') {
+      if (typeof window !== 'undefined') {
+        const current = window.localStorage.getItem('pcr.bios-crt') === 'on' ? 'off' : 'on';
+        window.localStorage.setItem('pcr.bios-crt', current);
+        if (current === 'on') {
+          document.documentElement.setAttribute('data-crt-filter', 'on');
+          response('SUCCESS: Activated CRT glass screen filter.');
+        } else {
+          document.documentElement.removeAttribute('data-crt-filter');
+          response('SUCCESS: Deactivated CRT glass screen filter.');
+        }
+      }
+      return;
+    }
+
+    // COMMAND: MORSE
+    if (input === 'morse' || input === 'beep') {
+      response('BOOTING: Launching Morse code telemetry transmitter...');
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('pcr.toggle-morse'));
         onClose();
       }, 800);
       return;

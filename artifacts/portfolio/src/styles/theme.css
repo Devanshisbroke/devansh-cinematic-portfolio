@@ -260,4 +260,62 @@ html[data-era="2022"] [data-cinematic="static"] {
   display: none !important;
 }
 
+/* === CRT Phosphor Tube Screen Filter ===================================== */
+html[data-crt-filter="on"]::before {
+  content: " ";
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 99999999;
+  /* Thin vertical scanlines and horizontal grid lines for retro look */
+  background: 
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.22) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+}
 
+html[data-crt-filter="on"]::after {
+  content: " ";
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 99999998;
+  /* Radial vignette for glass curve illumination feel */
+  background: radial-gradient(circle, rgba(0, 255, 65, 0.03) 0%, rgba(0, 0, 0, 0.38) 80%, rgba(0, 0, 0, 0.7) 120%);
+  pointer-events: none;
+}
+
+html[data-crt-filter="on"] body {
+  animation: crt-flicker 0.12s infinite;
+  /* Subtle glass tube curvature scale */
+  transform: scale(1.005) rotateX(0.2deg) rotateY(-0.1deg);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+@keyframes crt-flicker {
+  0% { opacity: 0.993; }
+  50% { opacity: 1; }
+  100% { opacity: 0.995; }
+}
+
+/* Sweeping phosphors bar */
+.crt-sweep-line {
+  position: fixed;
+  inset: 0;
+  z-index: 99999997;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 255, 65, 0) 0%,
+    rgba(0, 255, 65, 0.06) 10%,
+    rgba(0, 255, 65, 0) 20%
+  );
+  animation: crt-sweep-anim 8s linear infinite;
+}
+
+@keyframes crt-sweep-anim {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}

@@ -61,6 +61,8 @@ interface BuilderArgs {
   setGame: (v: boolean) => void;
   setGlitch: (v: boolean) => void;
   setTimeTravel: (v: boolean) => void;
+  setPhysics: (v: boolean) => void;
+  setMorse: (v: boolean) => void;
 }
 
 function buildCommands({
@@ -72,6 +74,8 @@ function buildCommands({
   setGame,
   setGlitch,
   setTimeTravel,
+  setPhysics,
+  setMorse,
 }: BuilderArgs): Command[] {
   const cmds: Command[] = [];
 
@@ -305,6 +309,59 @@ function buildCommands({
     },
   });
 
+  cmds.push({
+    id: 'sys:physics',
+    kind: 'system',
+    title: 'Physics Playground · HTML physics',
+    subtitle: 'rigid-body DOM physics with 120Hz rAF engine',
+    hint: '⏎',
+    glyph: '⚛',
+    hue: '#00FF41',
+    keywords: 'physics sandbox gravity throw drag body kinematics simulation',
+    run: () => {
+      setPhysics(true);
+      close();
+    },
+  });
+
+  cmds.push({
+    id: 'sys:crt',
+    kind: 'system',
+    title: 'CRT Phosphor Screen Filter',
+    subtitle: 'toggle curved glass barrel tube distortion',
+    hint: '⏎',
+    glyph: '📺',
+    hue: '#6FD4FF',
+    keywords: 'crt filter phosphor curved glass barrel tube distortion scanline screen',
+    run: () => {
+      if (typeof window !== 'undefined') {
+        const current = window.localStorage.getItem('pcr.bios-crt') === 'on' ? 'off' : 'on';
+        window.localStorage.setItem('pcr.bios-crt', current);
+        if (current === 'on') {
+          document.documentElement.setAttribute('data-crt-filter', 'on');
+        } else {
+          document.documentElement.removeAttribute('data-crt-filter');
+        }
+      }
+      close();
+    },
+  });
+
+  cmds.push({
+    id: 'sys:morse',
+    kind: 'system',
+    title: 'Morse Code Telemetry Transmitter',
+    subtitle: 'convert directives to audio & status flasher',
+    hint: '⏎',
+    glyph: '📡',
+    hue: '#FFB347',
+    keywords: 'morse code translator signal beep sound telemetry flash transmitter',
+    run: () => {
+      setMorse(true);
+      close();
+    },
+  });
+
   // Contextual "ask the system" answers (precomputed; no API call).
   for (const a of buildAnswers()) {
     cmds.push({
@@ -403,6 +460,8 @@ export function CommandPalette({
   setGame,
   setGlitch,
   setTimeTravel,
+  setPhysics,
+  setMorse,
 }: {
   setCoreDump: (v: boolean) => void;
   setMeltdown: (v: boolean) => void;
@@ -411,6 +470,8 @@ export function CommandPalette({
   setGame: (v: boolean) => void;
   setGlitch: (v: boolean) => void;
   setTimeTravel: (v: boolean) => void;
+  setPhysics: (v: boolean) => void;
+  setMorse: (v: boolean) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -435,8 +496,10 @@ export function CommandPalette({
         setGame,
         setGlitch,
         setTimeTravel,
+        setPhysics,
+        setMorse,
       }),
-    [close, setCoreDump, setMeltdown, setBios, setShell, setGame, setGlitch, setTimeTravel],
+    [close, setCoreDump, setMeltdown, setBios, setShell, setGame, setGlitch, setTimeTravel, setPhysics, setMorse],
   );
 
   const filtered = useMemo(() => {
