@@ -217,6 +217,7 @@ export function Threshold() {
         <h1
           id="threshold-h1"
           data-kinetic
+          data-kinetic-jelly
           data-kinetic-weight-min="400"
           data-kinetic-weight-max="700"
           data-kinetic-opsz-min="48"

@@ -24,6 +24,12 @@ import { CursorAura } from './design-system/primitives/CursorAura';
 import { CursorReadout } from './design-system/primitives/CursorReadout';
 import { CommandPalette } from './design-system/primitives/CommandPalette';
 import { CoreDump } from './design-system/primitives/CoreDump';
+import { MeltdownEffect } from './design-system/primitives/MeltdownEffect';
+import { BiosConfig } from './design-system/primitives/BiosConfig';
+import { TerminalShell } from './design-system/primitives/TerminalShell';
+import { TimeTravelHUD } from './design-system/primitives/TimeTravelHUD';
+import { SelfHealingGlitch } from './design-system/primitives/SelfHealingGlitch';
+import { BrickBreakGame } from './design-system/primitives/BrickBreakGame';
 import { KonamiListener } from './design-system/primitives/KonamiListener';
 import { WarpTransition } from './design-system/primitives/WarpTransition';
 import { AudioToggle } from './design-system/primitives/AudioToggle';
@@ -32,7 +38,8 @@ import { SceneProgress } from './design-system/primitives/SceneProgress';
 import { ThemeCycle } from './design-system/primitives/ThemeCycle';
 import { FooterTelemetry } from './design-system/primitives/FooterTelemetry';
 import { TabIdentity } from './design-system/primitives/TabIdentity';
-import { play } from './audio/sound-engine';
+import { MatrixRain } from './cinematic-background/MatrixRain';
+import { play, playKeystroke } from './audio/sound-engine';
 import { BootSequence } from './scenes/BootSequence';
 import { SystemHUD } from './scenes/SystemHUD';
 import startLenis from './motion/lenis-bridge';
@@ -194,6 +201,17 @@ function AppShell(): ReactNode {
     return () => { cancelled = true; teardown?.(); };
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
+      playKeystroke(e.key);
+    };
+    window.addEventListener('keydown', handleKeyDown, { capture: true, passive: true });
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown, { capture: true });
+    };
+  }, []);
+
   useHeadingHierarchyAssertion();
 
   return (
@@ -209,6 +227,7 @@ function AppShell(): ReactNode {
       <Suspense fallback={null}>
         <CinematicBackground />
       </Suspense>
+      <MatrixRain />
 
       {/* Atmospheric overlays */}
       <div className="cinema-noise" aria-hidden="true" />
@@ -345,6 +364,29 @@ function AppShell(): ReactNode {
         <div style={footerInnerStyle}>
           <FooterTelemetry />
           <div style={footerControlsStyle}>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('pcr.toggle-shell'))}
+              data-cursor-magnet
+              title="Open AI developer shell"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)',
+                padding: 'var(--space-2) var(--space-3)',
+                minHeight: 36,
+                background: 'transparent',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 'var(--radius-pill)',
+                color: 'inherit',
+                fontFamily: 'var(--font-body)',
+                fontSize: 'var(--text-small)',
+                cursor: 'none',
+              }}
+            >
+              <span aria-hidden="true" style={{ color: '#FFB347' }}>⚙</span>
+              <span>Dev Shell</span>
+            </button>
             <ReducedMotionToggle />
             <ThemeCycle />
             <AudioToggle />
@@ -369,9 +411,37 @@ export function App(): ReactNode {
     return Boolean(sessionStorage.getItem('pcr.boot-played'));
   });
   const [coreDump, setCoreDump] = useState(false);
+  const [meltdown, setMeltdown] = useState(false);
+  const [bios, setBios] = useState(false);
+  const [shell, setShell] = useState(false);
+  const [game, setGame] = useState(false);
+  const [glitch, setGlitch] = useState(false);
+  const [timeTravel, setTimeTravel] = useState(false);
 
   useEffect(() => { setHydrated(true); }, []);
   void hydrated;
+
+  useEffect(() => {
+    const handleToggleBios = () => setBios((b) => !b);
+    const handleToggleShell = () => setShell((s) => !s);
+    const handleToggleGame = () => setGame((g) => !g);
+    const handleToggleGlitch = () => setGlitch((g) => !g);
+    const handleToggleTimeTravel = () => setTimeTravel((t) => !t);
+
+    window.addEventListener('pcr.toggle-bios', handleToggleBios);
+    window.addEventListener('pcr.toggle-shell', handleToggleShell);
+    window.addEventListener('pcr.toggle-game', handleToggleGame);
+    window.addEventListener('pcr.toggle-glitch', handleToggleGlitch);
+    window.addEventListener('pcr.toggle-timetravel', handleToggleTimeTravel);
+
+    return () => {
+      window.removeEventListener('pcr.toggle-bios', handleToggleBios);
+      window.removeEventListener('pcr.toggle-shell', handleToggleShell);
+      window.removeEventListener('pcr.toggle-game', handleToggleGame);
+      window.removeEventListener('pcr.toggle-glitch', handleToggleGlitch);
+      window.removeEventListener('pcr.toggle-timetravel', handleToggleTimeTravel);
+    };
+  }, []);
 
   return (
     <LazyMotion features={domAnimation}>
@@ -379,8 +449,30 @@ export function App(): ReactNode {
         {!bootDone && <BootSequence onComplete={() => setBootDone(true)} onPlaySound={() => play('boot')} />}
         <AppShell />
         {bootDone && <SystemHUD />}
-        <CommandPalette setCoreDump={setCoreDump} />
+        <CommandPalette
+          setCoreDump={setCoreDump}
+          setMeltdown={setMeltdown}
+          setBios={setBios}
+          setShell={setShell}
+          setGame={setGame}
+          setGlitch={setGlitch}
+          setTimeTravel={setTimeTravel}
+        />
         <CoreDump active={coreDump} onClose={() => setCoreDump(false)} />
+        <MeltdownEffect active={meltdown} onClose={() => setMeltdown(false)} />
+        <BiosConfig active={bios} onClose={() => setBios(false)} />
+        <TerminalShell
+          active={shell}
+          onClose={() => setShell(false)}
+          triggerMeltdown={() => setMeltdown(true)}
+          triggerBios={() => setBios(true)}
+          triggerGame={() => setGame(true)}
+          triggerGlitch={() => setGlitch(true)}
+          triggerTimeTravel={() => setTimeTravel(true)}
+        />
+        <TimeTravelHUD active={timeTravel} onClose={() => setTimeTravel(false)} />
+        <SelfHealingGlitch active={glitch} onClose={() => setGlitch(false)} />
+        <BrickBreakGame active={game} onClose={() => setGame(false)} />
         <KonamiListener onActivate={() => { setCoreDump(true); play('dump'); }} />
       </ScrollSourceProvider>
     </LazyMotion>

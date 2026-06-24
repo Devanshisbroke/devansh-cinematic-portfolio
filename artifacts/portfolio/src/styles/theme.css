@@ -187,3 +187,77 @@
   --cursor-clip: none !important;
 }
 
+/* === Era 2024: Corporate MBA Editorial === */
+html[data-era="2024"] body {
+  background: #F4F1EA !important;
+  color: #0A0A0A !important;
+  background-image: none !important;
+}
+html[data-era="2024"] {
+  --surface-base: #F4F1EA !important;
+  --surface-elevated-1: #FFFFFF !important;
+  --surface-elevated-2: #FBF9F4 !important;
+  --surface-accent: #FFF6E1 !important;
+  --surface-overlay: rgba(244, 241, 234, 0.95) !important;
+  --surface-glass: rgba(255, 255, 255, 0.85) !important;
+  --color-text: #0A0A0A !important;
+  --color-text-muted: #3F3D36 !important;
+  --color-text-subtle: #6B6759 !important;
+  --font-display: "Fraunces", Georgia, serif !important;
+  --font-body: "Fraunces", Georgia, serif !important;
+  --font-mono: Georgia, serif !important;
+  --color-amber: #000000 !important;
+  --color-plasma: #000000 !important;
+  --color-signal: #000000 !important;
+  --glow-amber: none !important;
+  --glow-plasma: none !important;
+  --glow-signal: none !important;
+}
+html[data-era="2024"] [data-cinematic="webgl"],
+html[data-era="2024"] [data-cinematic="static"],
+html[data-era="2024"] .cinema-noise,
+html[data-era="2024"] .cinema-vignette,
+html[data-era="2024"] [data-cursor-aura="ring"],
+html[data-era="2024"] [data-cursor-aura="dot"] {
+  display: none !important;
+}
+html[data-era="2024"] *,
+html[data-era="2024"] *::before,
+html[data-era="2024"] *::after {
+  cursor: auto !important;
+}
+
+/* === Era 2022: Cyberpunk Terminal === */
+html[data-era="2022"] body {
+  background: #050010 !important;
+  color: #00FFFF !important;
+  background-image: 
+    linear-gradient(rgba(255, 0, 127, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 0, 127, 0.04) 1px, transparent 1px) !important;
+  background-size: 32px 32px !important;
+}
+html[data-era="2022"] {
+  --surface-base: #050010 !important;
+  --surface-elevated-1: #100018 !important;
+  --surface-elevated-2: #1c002c !important;
+  --surface-accent: #2e0048 !important;
+  --surface-overlay: rgba(5, 0, 16, 0.9) !important;
+  --surface-glass: rgba(16, 0, 24, 0.85) !important;
+  --color-text: #00FFFF !important;
+  --color-text-muted: #FF00FF !important;
+  --color-text-subtle: #00FF41 !important;
+  --font-display: "JetBrains Mono", monospace !important;
+  --font-body: "JetBrains Mono", monospace !important;
+  --font-mono: "JetBrains Mono", monospace !important;
+  --color-amber: #00FFFF !important;
+  --color-plasma: #FF00FF !important;
+  --color-signal: #00FF41 !important;
+  --glow-amber: 0 0 24px #00FFFF, 0 0 64px rgba(0,255,255,0.4) !important;
+  --glow-plasma: 0 0 24px #FF00FF, 0 0 64px rgba(255,0,127,0.4) !important;
+}
+html[data-era="2022"] [data-cinematic="webgl"],
+html[data-era="2022"] [data-cinematic="static"] {
+  display: none !important;
+}
+
+

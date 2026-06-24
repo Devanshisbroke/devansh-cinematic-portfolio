@@ -50,6 +50,7 @@ export function TheWork() {
           <h2
             id="work-h2"
             data-kinetic
+            data-kinetic-jelly
             data-kinetic-weight-min="400"
             data-kinetic-weight-max="640"
             style={{

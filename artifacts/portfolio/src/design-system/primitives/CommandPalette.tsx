@@ -55,9 +55,24 @@ interface Command {
 interface BuilderArgs {
   close: () => void;
   setCoreDump: (v: boolean) => void;
+  setMeltdown: (v: boolean) => void;
+  setBios: (v: boolean) => void;
+  setShell: (v: boolean) => void;
+  setGame: (v: boolean) => void;
+  setGlitch: (v: boolean) => void;
+  setTimeTravel: (v: boolean) => void;
 }
 
-function buildCommands({ close, setCoreDump }: BuilderArgs): Command[] {
+function buildCommands({
+  close,
+  setCoreDump,
+  setMeltdown,
+  setBios,
+  setShell,
+  setGame,
+  setGlitch,
+  setTimeTravel,
+}: BuilderArgs): Command[] {
   const cmds: Command[] = [];
 
   // Scene navigation
@@ -200,6 +215,96 @@ function buildCommands({ close, setCoreDump }: BuilderArgs): Command[] {
     },
   });
 
+  cmds.push({
+    id: 'sys:meltdown',
+    kind: 'system',
+    title: 'Meltdown · destroy page',
+    subtitle: 'simulate gravitational collapse',
+    hint: '⏎',
+    glyph: '☄',
+    hue: '#FF5555',
+    keywords: 'meltdown destroy collapse gravity crash break bug',
+    run: () => {
+      setMeltdown(true);
+      close();
+    },
+  });
+
+  cmds.push({
+    id: 'sys:bios',
+    kind: 'system',
+    title: 'BIOS Setup Utility',
+    subtitle: 'configure hardware & sound options',
+    hint: '⏎',
+    glyph: '⌨',
+    hue: '#0000A8',
+    keywords: 'bios setup award utility config configuration settings',
+    run: () => {
+      setBios(true);
+      close();
+    },
+  });
+
+  cmds.push({
+    id: 'sys:shell',
+    kind: 'system',
+    title: 'Terminal Shell AI Assistant',
+    subtitle: 'chat offline with the portfolio',
+    hint: '⏎',
+    glyph: '📟',
+    hue: '#00FF41',
+    keywords: 'shell terminal ai assistant chat query search ask offline command console',
+    run: () => {
+      setShell(true);
+      close();
+    },
+  });
+
+  cmds.push({
+    id: 'sys:game',
+    kind: 'system',
+    title: 'Breakout Game · play page breaker',
+    subtitle: 'destroy page elements in canvas minigame',
+    hint: '⏎',
+    glyph: '🎮',
+    hue: '#00FF41',
+    keywords: 'game play breakout brick breaker ball paddle code break brick minigame',
+    run: () => {
+      setGame(true);
+      close();
+    },
+  });
+
+  cmds.push({
+    id: 'sys:timetravel',
+    kind: 'system',
+    title: 'Git Timeline travel · scrub eras',
+    subtitle: 'morph page styles across career epochs',
+    hint: '⏎',
+    glyph: '🕰️',
+    hue: '#FFB347',
+    keywords: 'time travel git timeline scrub era career epoch 2026 2024 2022 2020 history',
+    run: () => {
+      setTimeTravel(true);
+      close();
+    },
+  });
+
+  cmds.push({
+    id: 'sys:glitch',
+    kind: 'system',
+    title: 'System Glitch · induce noise corruption',
+    subtitle: 'test self-healing sweep laser telemetry',
+    hint: '⏎',
+    glyph: '⚡',
+    hue: '#FF00FF',
+    keywords: 'glitch corrupt noise warning self healing scanline sweep code leak error',
+    run: () => {
+      setGlitch(true);
+      close();
+    },
+  });
+
   // Contextual "ask the system" answers (precomputed; no API call).
   for (const a of buildAnswers()) {
     cmds.push({
@@ -292,8 +397,20 @@ function rankCommand(cmd: Command, query: string): number {
 
 export function CommandPalette({
   setCoreDump,
+  setMeltdown,
+  setBios,
+  setShell,
+  setGame,
+  setGlitch,
+  setTimeTravel,
 }: {
   setCoreDump: (v: boolean) => void;
+  setMeltdown: (v: boolean) => void;
+  setBios: (v: boolean) => void;
+  setShell: (v: boolean) => void;
+  setGame: (v: boolean) => void;
+  setGlitch: (v: boolean) => void;
+  setTimeTravel: (v: boolean) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -308,8 +425,18 @@ export function CommandPalette({
   }, []);
 
   const commands = useMemo(
-    () => buildCommands({ close, setCoreDump }),
-    [close, setCoreDump],
+    () =>
+      buildCommands({
+        close,
+        setCoreDump,
+        setMeltdown,
+        setBios,
+        setShell,
+        setGame,
+        setGlitch,
+        setTimeTravel,
+      }),
+    [close, setCoreDump, setMeltdown, setBios, setShell, setGame, setGlitch, setTimeTravel],
   );
 
   const filtered = useMemo(() => {

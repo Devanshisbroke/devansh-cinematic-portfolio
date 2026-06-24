@@ -19,7 +19,7 @@
 
 const STORAGE_KEY = 'pcr.audio';
 
-type SoundName = 'boot' | 'enter' | 'tick' | 'burst' | 'dump';
+type SoundName = 'boot' | 'enter' | 'tick' | 'burst' | 'dump' | 'meltdown';
 
 let ctx: AudioContext | null = null;
 let masterGain: GainNode | null = null;
@@ -322,5 +322,129 @@ export function play(name: SoundName): void {
         gain: 0.22,
       });
       break;
+    case 'meltdown': {
+      const c = ensureContext();
+      if (!c || !masterGain) return;
+      const t0 = c.currentTime;
+      const duration = 2.0;
+
+      const osc = c.createOscillator();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(380, t0);
+      osc.frequency.exponentialRampToValueAtTime(30, t0 + duration);
+
+      const filter = c.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(800, t0);
+      filter.frequency.exponentialRampToValueAtTime(80, t0 + duration);
+
+      const env = c.createGain();
+      env.gain.setValueAtTime(0.25, t0);
+      env.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+
+      osc.connect(filter);
+      filter.connect(env);
+      env.connect(masterGain);
+
+      osc.start(t0);
+      osc.stop(t0 + duration + 0.1);
+
+      playTone({
+        freq: 45,
+        durationMs: 2000,
+        type: 'sine',
+        attack: 0.2,
+        release: 0.8,
+        gain: 0.3,
+      });
+
+      // crackling static bursts
+      for (let i = 0; i < 15; i++) {
+        const start = Math.random() * 1.5;
+        const dur = 10 + Math.random() * 40;
+        setTimeout(() => {
+          if (isAudioEnabled()) {
+            playNoiseBurst(dur, 0.08);
+          }
+        }, start * 1000);
+      }
+      break;
+    }
   }
 }
+
+export function playKeystroke(keyChar: string): void {
+  if (!isAudioEnabled()) return;
+  const c = ensureContext();
+  if (!c || !masterGain) return;
+
+  const SCALE = [
+    196.00, // G3
+    220.00, // A3
+    246.94, // B3
+    293.66, // D4
+    329.63, // E4
+    392.00, // G4
+    440.00, // A4
+    493.88, // B4
+    587.33, // D5
+    659.25, // E5
+    783.99, // G5
+    880.00, // A5
+  ];
+
+  const code = keyChar.toLowerCase().charCodeAt(0);
+  if (isNaN(code) || code < 32 || code > 126) return; // only play printable ASCII
+
+  // Read config from local storage dynamically
+  let waveform: OscillatorType = 'triangle';
+  let attackMs = 3;
+  let releaseMs = 120;
+
+  if (typeof window !== 'undefined') {
+    try {
+      const storedWave = window.localStorage.getItem('pcr.bios-waveform') as OscillatorType | null;
+      if (storedWave) waveform = storedWave;
+
+      const storedAttack = window.localStorage.getItem('pcr.bios-attack');
+      if (storedAttack === 'fast') attackMs = 3;
+      else if (storedAttack === 'medium') attackMs = 8;
+      else if (storedAttack === 'slow') attackMs = 20;
+
+      const storedRelease = window.localStorage.getItem('pcr.bios-release');
+      if (storedRelease === 'fast') releaseMs = 60;
+      else if (storedRelease === 'medium') releaseMs = 120;
+      else if (storedRelease === 'slow') releaseMs = 250;
+    } catch {
+      // noop
+    }
+  }
+
+  // Map to scale index
+  const idx = code % SCALE.length;
+  const freq = SCALE[idx]!;
+
+  // 1. Dynamic oscillator for warm fundamental
+  playTone({
+    freq,
+    durationMs: 100 + releaseMs,
+    type: waveform,
+    attack: attackMs / 1000,
+    release: releaseMs / 1000,
+    gain: 0.07,
+  });
+
+  // 2. Harmonic overtone oscillator
+  playTone({
+    freq: freq * 2,
+    durationMs: 40 + releaseMs / 2,
+    type: waveform === 'sine' ? 'triangle' : 'sine', // contrast wave
+    attack: 0.001,
+    release: (releaseMs / 2) / 1000,
+    gain: 0.02,
+  });
+
+  // 3. Short mechanical click (noise burst)
+  playNoiseBurst(12, 0.04);
+}
+

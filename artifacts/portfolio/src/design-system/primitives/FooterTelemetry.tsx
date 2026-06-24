@@ -20,6 +20,8 @@ interface Metric {
   label: string;
   value: string;
   hue?: string;
+  event: string;
+  title: string;
 }
 
 function fmtUptime(ms: number): string {
@@ -63,11 +65,11 @@ export function FooterTelemetry() {
   const hash = getHash();
 
   const metrics: Metric[] = [
-    { label: 'build',  value: hash,       hue: '#FFB347' },
-    { label: 'origin', value: 'static',   hue: '#8E8B82' },
-    { label: 'react',  value: '19.x',     hue: '#8E8B82' },
-    { label: 'vite',   value: '7.3',      hue: '#8E8B82' },
-    { label: 'uptime', value: uptime,     hue: '#8EB58A' },
+    { label: 'build',  value: hash,       hue: '#FFB347', event: 'pcr.toggle-bios',       title: 'Run BIOS setup utility' },
+    { label: 'origin', value: 'static',   hue: '#8E8B82', event: 'pcr.toggle-timetravel', title: 'Travel through career timeline' },
+    { label: 'react',  value: '19.x',     hue: '#8E8B82', event: 'pcr.toggle-game',       title: 'Play brick break minigame' },
+    { label: 'vite',   value: '7.3',      hue: '#8E8B82', event: 'pcr.toggle-game',       title: 'Play brick break minigame' },
+    { label: 'uptime', value: uptime,     hue: '#8EB58A', event: 'pcr.toggle-glitch',     title: 'Trigger cybernetic telemetry diagnostics' },
   ];
 
   return (
@@ -85,13 +87,28 @@ export function FooterTelemetry() {
         textTransform: 'uppercase',
       }}
     >
-      <span
+      <button
+        type="button"
+        onClick={() => window.dispatchEvent(new CustomEvent('pcr.toggle-shell'))}
+        title="Open AI developer shell"
+        data-cursor-magnet
         style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: 6,
           color: '#FFB347',
+          background: 'transparent',
+          border: 'none',
+          padding: 0,
+          margin: 0,
+          font: 'inherit',
+          cursor: 'none',
+          textTransform: 'uppercase',
+          letterSpacing: 'inherit',
+          transition: 'opacity 200ms ease',
         }}
+        onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.75'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
       >
         <span
           aria-hidden="true"
@@ -106,7 +123,7 @@ export function FooterTelemetry() {
           }}
         />
         ● online
-      </span>
+      </button>
       <span style={{ opacity: 0.3 }}>::</span>
       {metrics.map((m, i) => (
         <span
@@ -118,8 +135,48 @@ export function FooterTelemetry() {
             color: '#8E8B82',
           }}
         >
-          <span style={{ opacity: 0.55 }}>{m.label}</span>
-          <span style={{ color: m.hue ?? '#DCD9D2' }}>{m.value}</span>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent(m.event))}
+            title={m.title}
+            data-cursor-magnet
+            style={{
+              display: 'inline-flex',
+              alignItems: 'baseline',
+              gap: 6,
+              color: 'inherit',
+              background: 'transparent',
+              border: 'none',
+              padding: 0,
+              margin: 0,
+              font: 'inherit',
+              cursor: 'none',
+              textTransform: 'uppercase',
+              letterSpacing: 'inherit',
+              transition: 'opacity 200ms ease, color 200ms ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#FFFFFF';
+              const valEl = e.currentTarget.querySelector('.telemetry-value') as HTMLElement;
+              if (valEl) valEl.style.textDecoration = 'underline';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = 'inherit';
+              const valEl = e.currentTarget.querySelector('.telemetry-value') as HTMLElement;
+              if (valEl) valEl.style.textDecoration = 'none';
+            }}
+          >
+            <span style={{ opacity: 0.55 }}>{m.label}</span>
+            <span
+              className="telemetry-value"
+              style={{
+                color: m.hue ?? '#DCD9D2',
+                transition: 'text-decoration 200ms ease',
+              }}
+            >
+              {m.value}
+            </span>
+          </button>
           {i < metrics.length - 1 && <span style={{ opacity: 0.25, marginInlineStart: 8 }}>·</span>}
         </span>
       ))}

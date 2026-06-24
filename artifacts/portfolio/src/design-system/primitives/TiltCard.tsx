@@ -111,6 +111,7 @@ export function TiltCard({
       ref={ref}
       href={href}
       data-cursor-magnet
+      data-kinetic-jelly
       aria-label={ariaLabel}
       className={className}
       style={{
