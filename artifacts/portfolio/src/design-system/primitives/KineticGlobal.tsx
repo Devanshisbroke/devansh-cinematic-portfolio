@@ -99,6 +99,7 @@ export function KineticGlobal() {
         if (hasMouseMoved) {
           lastMouseX = mouseX;
           lastMouseY = mouseY;
+          hasMouseMoved = false;
         }
         raf = requestAnimationFrame(tick);
         return;
@@ -119,6 +120,7 @@ export function KineticGlobal() {
         mouseVy = (mouseY - lastMouseY) / dt;
         lastMouseX = mouseX;
         lastMouseY = mouseY;
+        hasMouseMoved = false;
       }
       
       smoothedMouseVx += (mouseVx - smoothedMouseVx) * 0.12;
@@ -130,6 +132,15 @@ export function KineticGlobal() {
 
       lastTime = now;
       lastScrollY = window.scrollY;
+
+      // Fast-path check: if stationary and velocities are decayed, bypass layout reads
+      const isScrollActive = Math.abs(scrollVelocity) > 0.001 || Math.abs(dy) > 0.01;
+      const isMouseActive = Math.abs(smoothedMouseVx) > 0.001 || Math.abs(smoothedMouseVy) > 0.001;
+
+      if (!isScrollActive && !isMouseActive) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
 
       const skew = Math.max(-4, Math.min(4, scrollVelocity * 1.5));
       const mSkewX = Math.max(-10, Math.min(10, smoothedMouseVx * 8));

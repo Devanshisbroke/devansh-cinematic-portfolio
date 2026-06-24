@@ -141,18 +141,22 @@ export function MeltdownEffect({
     canvas.height = window.innerHeight;
 
     let rafId = 0;
+    let lastTime = performance.now();
 
-    const tick = () => {
+    const tick = (now: number) => {
+      const dt = Math.min(33, now - lastTime) / 16.666;
+      lastTime = now;
+
       ctx.fillStyle = 'rgba(0, 0, 0, 0.18)'; // slight trail fade
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       let allResting = true;
 
       particles.forEach((p) => {
-        // Apply gravity
-        p.vy += p.g;
-        p.y += p.vy;
-        p.x += p.vx;
+        // Apply gravity scaled by dt
+        p.vy += p.g * dt;
+        p.y += p.vy * dt;
+        p.x += p.vx * dt;
 
         // Ground collision
         const floor = canvas.height - 24;

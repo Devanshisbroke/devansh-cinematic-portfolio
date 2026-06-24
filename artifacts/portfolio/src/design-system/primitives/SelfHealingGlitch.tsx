@@ -7,6 +7,7 @@ interface GlitchedElement {
   originalHTML: string;
   glitchedHTML: string;
   healed: boolean;
+  top: number; // cached absolute top position
 }
 
 export function SelfHealingGlitch({
@@ -16,7 +17,8 @@ export function SelfHealingGlitch({
   active: boolean;
   onClose: () => void;
 }) {
-  const [sweepY, setSweepY] = useState(-10);
+  const laserRef = useRef<HTMLDivElement>(null);
+  const tintRef = useRef<HTMLDivElement>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const oscRef = useRef<OscillatorNode | null>(null);
   const gainRef = useRef<GainNode | null>(null);
@@ -99,7 +101,6 @@ export function SelfHealingGlitch({
       if (!hasText) return;
 
       const originalHTML = el.innerHTML;
-      const text = el.textContent || '';
       
       // Scramble characters to make a glitch markup
       const scrambleChars = '01#%&@?*∆∇▲▼◀▶☼☾⌨☄';
@@ -117,32 +118,45 @@ export function SelfHealingGlitch({
         })
         .join('');
 
+      const rect = el.getBoundingClientRect();
+      const absoluteTop = rect.top + window.scrollY;
+
       glitchedItems.push({
         el,
         originalHTML,
         glitchedHTML: glitched,
         healed: false,
+        top: absoluteTop,
       });
 
       // Induce glitch state
       el.innerHTML = glitched;
     });
 
-    // 3. Sweep animation loop
+    // 3. Sweep animation loop (Time-based and Layout-read free)
     let rafId = 0;
-    let currentY = 0;
-    const speed = window.innerHeight / 75; // 75 frames total scan (approx 1.25s)
+    const startTime = performance.now();
+    const duration = 1200; // 1.2s total scan duration
 
-    const tick = () => {
-      currentY += speed;
-      setSweepY(currentY);
+    const tick = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(1, elapsed / duration);
+      const currentY = progress * window.innerHeight;
+
+      // Update scanline and tint directly on DOM nodes
+      if (laserRef.current) {
+        laserRef.current.style.transform = `translateY(${currentY}px)`;
+      }
+      if (tintRef.current) {
+        tintRef.current.style.transform = `scaleY(${progress})`;
+      }
 
       glitchedItems.forEach((item) => {
         if (item.healed) return;
-        const r = item.el.getBoundingClientRect();
+        const relativeTop = item.top - window.scrollY;
         
         // When sweep passes the top of the element, restore it!
-        if (r.top < currentY) {
+        if (relativeTop < currentY) {
           item.el.innerHTML = item.originalHTML;
           item.healed = true;
           
@@ -163,7 +177,7 @@ export function SelfHealingGlitch({
         }
       });
 
-      if (currentY < window.innerHeight) {
+      if (progress < 1) {
         rafId = requestAnimationFrame(tick);
       } else {
         // Complete scan
@@ -210,29 +224,36 @@ export function SelfHealingGlitch({
     <>
       {/* Horizontal laser scanline line */}
       <div
+        ref={laserRef}
         style={{
           position: 'fixed',
           left: 0,
           right: 0,
-          top: `${sweepY}px`,
+          top: 0,
+          transform: 'translateY(-10px)',
           height: '4px',
           background: 'linear-gradient(90deg, transparent, #00FF41, #FFFFFF, #00FF41, transparent)',
           boxShadow: '0 0 10px #00FF41, 0 0 24px rgba(0, 255, 65, 0.8)',
           zIndex: 9999999, // on top of everything
           pointerEvents: 'none',
+          willChange: 'transform',
         }}
       />
       {/* Glitch CRT static tint */}
       <div
+        ref={tintRef}
         style={{
           position: 'fixed',
           inset: 0,
-          top: 0,
-          height: `${sweepY}px`,
+          bottom: 'auto',
+          height: '100vh',
+          transform: 'scaleY(0)',
+          transformOrigin: 'top',
           backgroundColor: 'rgba(0, 255, 65, 0.015)',
           backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(0,255,65,0.01) 0%, transparent 100%)',
           zIndex: 9999998,
           pointerEvents: 'none',
+          willChange: 'transform',
         }}
       />
     </>,

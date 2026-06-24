@@ -169,17 +169,21 @@ export function BrickBreakGame({
 
     let rafId = 0;
     let isGameOver = false;
+    let lastTime = performance.now();
 
-    const tick = () => {
+    const tick = (now: number) => {
       if (isGameOver) return;
+
+      const dt = Math.min(33, now - lastTime) / 16.666;
+      lastTime = now;
 
       // Draw game frame background
       ctx.fillStyle = 'rgba(0, 0, 0, 0.25)'; // slight trail
       ctx.fillRect(0, 0, width, height);
 
-      // Update ball coordinates
-      ballX += ballVx;
-      ballY += ballVy;
+      // Update ball coordinates scaled by dt
+      ballX += ballVx * dt;
+      ballY += ballVy * dt;
 
       // Wall bounce
       if (ballX - ballRadius < 0) {
@@ -240,8 +244,8 @@ export function BrickBreakGame({
           b.el.style.visibility = 'hidden';
 
           // Simple bounce logic: resolve collision direction
-          const prevBallX = ballX - ballVx;
-          const prevBallY = ballY - ballVy;
+          const prevBallX = ballX - ballVx * dt;
+          const prevBallY = ballY - ballVy * dt;
 
           if (prevBallX + ballRadius <= b.x || prevBallX - ballRadius >= b.x + b.w) {
             ballVx = -ballVx;
